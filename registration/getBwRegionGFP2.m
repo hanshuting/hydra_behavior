@@ -1,0 +1,173 @@
+function [seg_im,theta,centroid,a,b] = getBwRegionGFP2(im,ifvisualize)
+% SYNOPSIS:
+%     [seg_avg,theta,centroid,a,b] = getBwRegion2(im,ifvisualize)
+% INPUT:
+%     im: image matrix
+%     ifvisualize: 1 to plot final result
+% OUTPUT:
+%     seg_avg: matrix with body parts labeling, 1 for foot region, 2 for
+%     upper body region, 3 for tentacle region
+%     theta: number, the head orietation of hydra (in degrees)
+%     centroid: centroid of hydra
+%     a: major axis length of the fitted ellipse
+%     b: minor axis length of the fitted ellipse
+%
+% Shuting Han, 2016
+
+%% check input
+if nargin < 2
+    ifvisualize = false;
+end
+
+%% parameters
+dims = size(im);
+P = round(size(im,1)*size(im,2)/(20*20));
+
+%% segmentation
+im = mat2gray(im);
+
+% smooth image
+% sig = 1;
+fgauss = fspecial('gaussian',[3,3],1);
+im = imfilter(im,fgauss);
+
+% adjust contrast
+im = imadjust(im,[0,1],[0,1],0.1);
+% im = adapthisteq(im,'Distribution','uniform');
+% im = adapthisteq(im,'Distribution','exponential');
+
+% threshold intensity
+thresh = multithresh(im,1);
+bw = im>thresh(1);
+bw = bwareaopen(bw,P);
+bw = imdilate(bw,strel('disk',3));
+
+% convolve with a gaussian filter to detect body
+% fgauss = fspecial('gaussian',round(dims/10),round(mean(dims))/40);
+% % im_conv = imfilter(im,fgauss);
+% im_conv = imfilter(im.*double(bw),fgauss);
+% im_conv = im_conv.*double(im_conv>multithresh(im_conv));
+% im_conv(im_conv==0) = NaN;
+im_conv = imopen(im,strel('disk',round(mean(dims)/50)));
+thresh = multithresh(im_conv,1);
+bw_conv = im_conv>thresh(1);
+bw_conv = imdilate(bw_conv,strel('disk',10));
+bw_conv = imerode(bw_conv,strel('disk',10));
+
+% fit ellipse
+rs = regionprops(logical(bw&bw_conv),'orientation','centroid','majoraxislength',...
+    'minoraxislength','area','pixellist');
+
+arg = zeros(length(rs),1);
+for i = 1:length(rs)
+    arg(i) = rs(i).Area;
+end
+[~,indx] = max(arg);
+centroid = rs(indx).Centroid;
+theta = rs(indx).Orientation;
+a = rs(indx).MajorAxisLength;
+b = rs(indx).MinorAxisLength;
+
+% separate body and tentacles
+theta_rad = pi*theta/180;
+f = sqrt((a/2)^2-(b/2)^2);
+f1 = centroid+[f*cos(theta_rad),-f*sin(theta_rad)];
+f2 = centroid-[f*cos(theta_rad),-f*sin(theta_rad)];
+rs_bwfull = regionprops(bw,'pixellist');
+bwpixel_all = cell2mat(struct2cell(rs_bwfull)');
+% ellipse region
+bodyindx = pdist2(bwpixel_all,f1)+pdist2(bwpixel_all,f2)<=a;
+ellp_region = zeros(dims);
+ellp_region(sub2ind(dims,bwpixel_all(bodyindx,2),bwpixel_all(bodyindx,1))) = 1;
+% whole body region
+bwfull_area = zeros(length(rs_bwfull),1);
+for i = 1:length(rs_bwfull)
+    bwfull_part = false(dims);
+    bwfull_part(sub2ind(dims,rs_bwfull(i).PixelList(:,2),...
+        rs_bwfull(i).PixelList(:,1))) = 1;
+    bwfull_area(i) = sum(sum(bwfull_part&ellp_region));
+end
+[~,bw_indx] = max(bwfull_area);
+bwfull_pixels = rs_bwfull(bw_indx).PixelList;
+bwbody = zeros(dims);
+bwbody(sub2ind(dims,bwfull_pixels(:,2),bwfull_pixels(:,1))) = 1;
+% non ellipse region
+non_ellp_region = bwbody&(~ellp_region);
+
+%% registration
+% generate patchs
+rg(1,:) = [-a a a -a -a]/2;
+rg(2,:) = [-a -a a a -a]/2;
+rg = [cos(-theta_rad) -sin(-theta_rad);sin(-theta_rad) cos(-theta_rad)]*rg;
+
+% edge around first patch
+rg1 = round(rg+(centroid'+[0.5*a*cos(theta_rad);-0.5*a*sin(theta_rad)])*ones(1,5));
+mask1 = poly2mask(rg1(1,:),rg1(2,:),dims(1),dims(2));
+
+% edge around second patch
+rg2 = round(rg+(centroid'+[-0.5*a*cos(theta_rad);0.5*a*sin(theta_rad)])*ones(1,5));
+mask2 = poly2mask(rg2(1,:),rg2(2,:),dims(1),dims(2));
+
+% determine head orientation
+if sum(sum(mask2&non_ellp_region)) > sum(sum(mask1&non_ellp_region))
+    theta = theta-180;
+    lower_mask = mask1;
+    upper_mask = mask2;
+else
+    lower_mask = mask2;
+    upper_mask = mask1;
+end
+
+%% segment body parts
+
+% over-segment the image
+int_marker = bwmorph(bwbody,'skel',Inf);
+% int_marker = false(dims);
+% int_marker(bwskel) = true;
+
+% force local minima
+int_marker = imdilate(int_marker,strel('disk',5));
+intm_dist = imcomplement(bwdist(bwbody&(~int_marker)));
+
+% watershed
+osreg = double(watershed(intm_dist));
+seg_line = (osreg==0).*bwbody;
+osreg = osreg.*bwbody;
+
+% get the region directly connected with the ellipse patch
+body_patch = zeros(dims);
+cc = bwconncomp(osreg);
+for i = 1:cc.NumObjects
+    cc_patch = zeros(dims(1)*dims(2),1);
+    cc_patch(cc.PixelIdxList{i}) = 1;
+    cc_patch = reshape(cc_patch,dims(1),dims(2));
+    cc_bdr = seg_line&imdilate(cc_patch,strel('square',3));
+    if sum(sum(cc_patch&ellp_region)) > 0
+        body_patch = body_patch|cc_patch|cc_bdr;
+    end
+end
+
+upper_body = body_patch&upper_mask;
+lower_body = body_patch&lower_mask;
+tent_region = non_ellp_region&(~lower_body)&(~upper_body);
+
+seg_im = NaN(dims);
+seg_im(lower_body) = 1;
+seg_im(upper_body) = 2;
+seg_im(tent_region) = 3;
+seg_im(isnan(seg_im)) = 0;
+
+
+%% visualization
+if ifvisualize
+    imagesc(im);colormap(gray);
+    axis equal tight;
+    hold on;plot_ellipse2(rs(indx));
+    quiver(rs(indx).Centroid(1),rs(indx).Centroid(2),cos(degtorad(rs(indx).Orientation))*...
+    rs(indx).MajorAxisLength,-sin(degtorad(rs(indx).Orientation))*rs(indx).MajorAxisLength);
+    xlim([0 dims(1)]);ylim([0 dims(2)]);
+    hold off
+    pause(0.01);
+end
+
+end
