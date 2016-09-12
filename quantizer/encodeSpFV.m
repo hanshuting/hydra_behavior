@@ -1,5 +1,4 @@
-function [dataCoeff,w,mu,sigma,nFV,eigval,meanDesc,acm] = encodeSpFV(fileIndx,K,lfeat,numPatch,...
-    filepath,namestr,intran,powern)
+function [dataCoeff,w,mu,sigma,nFV,eigval,meanDesc,acm] = encodeSpFV(fileIndx,filepath,fvparam)
 % Encode Fisher Vector with spatial temporal pyramids
 % SYNOPSIS: [dataCoeff,w,mu,sigma,FV,acm] = encodeFV(fileIndx,K,lfeat,...
 %   numPatch,filepath,namestr)
@@ -19,6 +18,14 @@ function [dataCoeff,w,mu,sigma,nFV,eigval,meanDesc,acm] = encodeSpFV(fileIndx,K,
 %   acm: file segmentation vector
 % 
 % Shuting Han, 2016
+
+% parse input parameter structure
+K = fvparam.K;
+numPatch = fvparam.numPatch;
+intran = fvparam.intran;
+powern = fvparam.powern;
+namestr = fvparam.namestr;
+lfeat = fvparam.lfeat;
 
 % load samples
 D = round(lfeat/2);

@@ -1,18 +1,25 @@
 function [trajAll,hofAll,hogAll,mbhxAll,mbhyAll,coordAll] = extractRegionTwDT...
-    (movieParam,filepath,segmat,numRegion,L,nxy,nt,W,N,chunkLen,track_thresh)
+    (movieParam,filepath,segmat,numRegion,dtparam)
 % Extract the descriptors from Dense Trajectory code, and store them in
 % cell arrays for codebook generation later.
 
+L = dtparam.L;
+s = dtparam.s;
+t = dtparam.t;
+W = dtparam.W;
+N = dtparam.N;
+tlen = dtparam.tlen;
+thresh = dtparam.thresh;
+
 % file information
-infostr = ['L_' num2str(L) '_W_' num2str(W) '_N_' num2str(N) '_s_' num2str(nxy) '_t_' num2str(nt)];
-trackInfo = dir([filepath movieParam.fileName '_' num2str(chunkLen)...
-    's_' num2str(track_thresh) '_' infostr '/*.txt']);
+infostr = ['L_' num2str(L) '_W_' num2str(W) '_N_' num2str(N) '_s_' num2str(s) '_t_' num2str(t)];
+trackInfo = dir([filepath movieParam.fileName '_' num2str(tlen)...
+    's_' num2str(thresh) '_' infostr '/*.txt']);
 numVideo = size(trackInfo,1);
 
 % DT feature information
-timeStep = chunkLen*movieParam.fr;
-% numRegion = 3; % see getBwRegion
-numPatch = nxy*nxy*nt;
+timeStep = tlen*movieParam.fr;
+numPatch = s*s*t;
 sTraj = 2*L;
 sCoord = 2*L;
 sHof = 9*numPatch;
@@ -46,8 +53,8 @@ for i = 1:numVideo
         
     else
     
-        dt_features = dlmread([filepath movieParam.fileName '_' num2str(chunkLen)...
-    's_' num2str(track_thresh) '_' infostr '/' trackInfo(i).name],'\t',2,0);
+        dt_features = dlmread([filepath movieParam.fileName '_' num2str(tlen)...
+    's_' num2str(thresh) '_' infostr '/' trackInfo(i).name],'\t',3,0);
         
         % trajectory coordinates
         crCoord = dt_features(:,11+sTraj:10+sTraj+sCoord);

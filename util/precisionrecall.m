@@ -1,12 +1,12 @@
-function [pprecision,precall,acr,cmat] = precisionrecall(predictedLabel,trueLabel)
+function [acr_all,prc,rec,acr,cmat] = precisionrecall(predictedLabel,trueLabel,numClass)
 % calculate precision, recall, accuracy and confusion matrix from the given
 % true label and predicted label
 
 % labelsetpredicted = unique(predictedLabel);
-labelsettrue = unique(trueLabel);
+labelsettrue = 1:numClass;
 
-pprecision = zeros(length(labelsettrue),1);
-precall = zeros(length(labelsettrue),1);
+prc = zeros(length(labelsettrue),1);
+rec = zeros(length(labelsettrue),1);
 acr = zeros(length(labelsettrue),1);
 cmat = confusionmat(trueLabel,predictedLabel);
 
@@ -18,33 +18,12 @@ for i = 1:length(labelsettrue)
     FP = sum(cmat(:,i))-cmat(i,i);
     TN = sum(cmat(:))-TP-FP-FN;
     
-    pprecision(i) = TP/(TP+FP);
-    precall(i) = TN/(TN+FP);
+    prc(i) = TP/(TP+FP);
+    rec(i) = TN/(TN+FP);
     acr(i) = (TP+TN)/(TP+TN+FP+FN);
-    
-%         TP = sum(trueLabel==labelsettrue(i)&...
-%             predictedLabel==labelsetpredicted(j));
-%         FP = sum(trueLabel~=labelsettrue(i)&...
-%             predictedLabel==labelsetpredicted(j));
-%         TN = sum(trueLabel~=labelsettrue(i)&...
-%             predictedLabel~=labelsetpredicted(j));
-%         FN = sum(trueLabel==labelsettrue(i)&...
-%             predictedLabel~=labelsetpredicted(j));
-%         
-%         cmat(i,j) = TP;
-%         
-%         if labelsettrue(i)==labelsetpredicted(j)
-%             pprecision(i) = TP/(TP+FP);
-%             precall(i) = TN/(TN+FP);
-%             acr(i) = (TP+TN)/(TP+TN+FP+FN);
-%         end
-        
-%     end
+
 end
 
-% figure;set(gcf,'color','w');
-% imagesc(cmat);colorbar;title('confusion matrix');
-
-
+acr_all = sum(predictedLabel==trueLabel)/length(trueLabel);
 
 end

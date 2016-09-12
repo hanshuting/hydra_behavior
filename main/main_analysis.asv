@@ -16,7 +16,7 @@ param.fileIndx = [1:5,7:11,13:28,30:34];
 param.trainIndx = [1:5,7:11,13:24,26:28,30:32];
 param.testIndx = [25,33,34];
 
-param.datastr = '20160912';
+param.datastr = '20160906';
 
 param.dpathbase = '/home/sh3276/work/data';
 param.pbase = '/home/sh3276/work/results';
@@ -47,12 +47,6 @@ param.dt.t = 1;
 param.dt.N = 32;
 param.dt.thresh = 0.5;
 
-param.annotype = 5;
-param.fr = 5;
-param.timeStep = param.dt.tlen*param.fr;
-param.infostr = sprintf('L_%u_W_%u_N_%u_s_%u_t_%u_step_%u',param.dt.L,...
-    param.dt.W,param.dt.N,param.dt.s,param.dt.t,param.timeStep);
-
 % FV parameters
 param.fv.K = 128;
 param.fv.ci = 90;
@@ -65,7 +59,7 @@ param.fv.numPatch = param.dt.s^2*param.dt.t;
 % SVM parameters
 param.svm.src = '/home/sh3276/software/libsvm';
 param.svm.percTrain = 0.9;
-param.svm.kernel = 3; % rbf kernel
+param.svm.kernel = 2; % rbf kernel
 param.svm.probest = 1; % true
 param.svm.name = [param.infostr '_drFVall_annoType' num2str(param.annotype)];
 
@@ -76,6 +70,12 @@ param.tsne.perplexity = 16;
 param.tsne.training_perplexity = 16;
 param.tsne = setRunParameters(param.tsne);
 param.tsne.percTrain = 0.8;
+
+param.annotype = 5;
+param.fr = 5;
+param.timeStep = param.dt.tlen*param.fr;
+param.infostr = sprintf('L_%u_W_%u_N_%u_s_%u_t_%u_step_%u',param.dt.L,...
+    param.dt.W,param.dt.N,param.dt.s,param.dt.t,param.timeStep);
 
 %% check if all directories exist
 if exist(param.dpath,'dir')~=7
@@ -293,26 +293,32 @@ end
 load([param.svmpath param.svm.name '_svm_data.mat']);
 pred = struct();
 pred_score = struct();
-anno.train = label(indxTrain);
-anno.test = label(indxTest);
 [pred.train,pred_score.train] = saveSVMpred(param.svmpath,[param.svm.name '_train']);
 [pred.test,pred_score.test] = saveSVMpred(param.svmpath,[param.svm.name '_test']);
 for n = 1:length(param.testIndx)
-    movieParam = paramAll(param.dpath,param.testIndx(n));
-    annoAll = annoMulti({movieParam},param.annopath,param.annotype,param.timeStep);
-    anno.new{n} = annoAll(annoAll~=0);
     [pred.new{n},pred_score.new{n}] = saveSVMpred(param.svmpath,...
         [param.svm.name '_' fileinfo(param.testIndx(n))]);
 end
 
-save([param.svmpath 'mat_results.mat'],'pred','pred_score','anno','-v7.3');
+
+for n = 1:length(param.testIndx)
+    movieParam = paramAll(param.dpath,param.testIndx(n));
+    annoAll = annoMulti({movieParam},param.annopath,param.annotype,param.timeStep);
+    anno.new{n} = annoAll(annoAll~=0);
+    [svm_stats.acr_all.new(n),svm_stats.prc.new{n},svm_stats.rec.new{n},...
+        svm_stats.acr.new{n},cmat.new{n}] = precisionrecall(pred.new{n},anno.new{n},numClass);
+end
+
+save([param.svmpath 'mat_results.mat'],'pred','pred_score','-v7.3');
 
 %% SVM analysis
 % confusion matrix and stats
+% load 'label','sample','indxTrain','indxTest'
 load([param.svmpath 'mat_results.mat']);
-numClass = max(anno.train);
+numClass = max(label);
 svm_stats = struct();
 cmat = struct();
+
 
 [svm_stats.acr_all.train,svm_stats.prc.train,svm_stats.rec.train,...
     svm_stats.acr.train,cmat.train] = precisionrecall(pred.train,anno.train,numClass);
@@ -327,10 +333,9 @@ for n = 1:length(param.testIndx)
 end
 
 [svm_stats.acr_all.new_all,svm_stats.prc.new_all,svm_stats.rec.new_all,...
-    svm_stats.acr.new_all,cmat.new_all] = precisionrecall...
-    (cell2mat(pred.new'),cell2mat(anno.new),numClass);
+        svm_stats.acr.new_all,cmat.new_all] = precisionrecall...
+        (cell2mat(pred.new'),cell2mat(anno.new),numClass);
 
-% plot confusion matrix
 num_plts = max([length(param.testIndx),3]);
 figure;set(gcf,'color','w')
 subplottight(2,num_plts,1)
@@ -355,16 +360,14 @@ disp(svm_stats.acr_all);
 % ROC curve
 figure;
 subplot(1,3,1)
-auc.train = plotROCmultic(anno.train,pred_score.train,numClass);
-legend('off')
+auc.train = plotROCmultic(label(indxTrain),pred_score.train,numClass);
 subplot(1,3,2)
-auc.test = plotROCmultic(anno.test,pred_score.test,numClass);
-legend('off')
+auc.test = plotROCmultic(label(indxTest),pred_score.test,numClass);
 subplot(1,3,3)
-auc.new = plotROCmultic(cell2mat(anno.new'),cell2mat(pred_score.new'),numClass);
+auc.new = plotROCmultic(cell2mat(anno.new),cell2mat(pred_score.new),numClass);
 
 % save results
-save([param.svmpath 'stats.mat'],'svm_stats','cmat','auc','-v7.3');
+save([param.svmpath 'stats.mat'],'svm_stats','cmat','-v7.3');
 
 %% embedding
 fparam = struct();

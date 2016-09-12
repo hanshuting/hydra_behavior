@@ -1,11 +1,17 @@
-function [nFV] = encodeIndivSpFV2(fileIndx,filepath,savepath,namestr,...
-    intran, powern)
+function [nFV] = encodeIndivSpFV2(fileIndx,filepath,fvparam)
 % encode fisher vector for individual feature files
+
+% parse input parameter structure
+intran = fvparam.intran;
+powern = fvparam.powern;
+namestr = fvparam.namestr;
+lfeat = fvparam.lfeat;
+gmmpath = fvparam.gmmpath;
 
 % load data
 movieParam = paramAll_galois(fileIndx);
-gmm = load([savepath namestr 'GMM.mat']);
-load([savepath namestr 'Coeff.mat']);
+gmm = load([gmmpath namestr 'GMM.mat']);
+load([gmmpath namestr 'Coeff.mat']);
 data = load([filepath movieParam.fileName '_' namestr '.mat']);
 data = struct2cell(data);
 data = data{1};
@@ -14,7 +20,6 @@ numPatch = size(data,2);
 numSample = cellfun('size',data,1);
 fdims = reshape(numSample',1,[])';
 
-lfeat = size(data{1,1},2);
 crData = cell(size(data));
 meanDesc = nanmean(cell2mat(data(:)),1);
 for j = 1:numPatch

@@ -1,9 +1,10 @@
 function [segmat] = makeRegisteredVideo(fileIndx,mask,timeStep,skipStep,...
-    filepath,savepath,ifscale,outputsz)
+    dpath,segpath,videopath,ifscale,outputsz)
 % generate registered video clips for Dense Trajectory code (segment,
 % align, and scale)
 % SYNOPSIS:
-%     makeRegisteredVideo(fileindx,timeStep)
+%     [segmat] = makeRegisteredVideo(fileIndx,mask,timeStep,skipStep,...
+%         dpath,segpath,videopath,ifscale,outputsz)
 % INPUT:
 %     fileIndx: index of video file to be processed (see fileinfo.m)
 %     timeStep: number of frames for each video clip
@@ -13,12 +14,12 @@ function [segmat] = makeRegisteredVideo(fileIndx,mask,timeStep,skipStep,...
 % parameters
 % rho = 1/25;
 brightness_scale = 0.5;
-movieParam = paramAll(fileIndx);
+movieParam = paramAll(dpath,fileIndx);
 timeLength = timeStep*skipStep/movieParam.fr;
-fprintf('processing file %s...\n',movieParam.fileName);
+fprintf('making videos for %s...\n',movieParam.fileName);
 
 % load registration data
-load([filepath movieParam.fileName '_seg.mat']);
+load([segpath movieParam.fileName '_seg.mat']);
 clear segAll
 tt = floor(size(mask,3)/timeStep/skipStep);
 
@@ -26,12 +27,12 @@ segmat = zeros([outputsz,tt],'uint8');
 
 % set saving parameters
 savename = [movieParam.fileName '_' num2str(timeLength) 's_0.5'];
-mkdir(savepath,savename);
+mkdir(videopath,savename);
 
 % generate registered video
-hf = figure;
-set(hf,'position',[300,300,outputsz(1),outputsz(2)]);
-frscale = outputsz(1)/3/mean(a);
+% hf = figure;
+% set(hf,'position',[300,300,outputsz(1),outputsz(2)]);
+frscale = outputsz(1)/3/nanmean(a);
 for i = 1:tt
     
 %     fprintf('time window %u\n',i);
@@ -47,7 +48,7 @@ for i = 1:tt
     end
 
     % create video file
-    writerobj = VideoWriter([savepath savename '\' savename '_' ...
+    writerobj = VideoWriter([videopath savename '\' savename '_' ...
         num2str(i,'%04d') '.avi']);
     open(writerobj);
     
@@ -68,10 +69,10 @@ for i = 1:tt
 %         im = imfilter(im,fgauss);
         
         % get scale
-        if i==1&&j==1
-            im_min = min(im(:));
-            im_max = max(im(:));
-        end
+%         if i==1&&j==1
+%             im_min = min(im(:));
+%             im_max = max(im(:));
+%         end
         
         % scale
         if ifscale
@@ -81,16 +82,19 @@ for i = 1:tt
         % keep only the segmented region
         im = im.*frbw;
         
-        % visualization
-        imagesc(im);colormap(gray);tightfig;axis off;
-        caxis([im_min (im_max-im_min)*brightness_scale+im_min]);
-        set(gca,'xtick',[],'ytick',[],'position',[0 0 1 1]);
-        set(hf,'position',[300,300,outputsz(1),outputsz(2)]);
-        pause(0.01);
-    
-        % write file
-        F = getframe(hf);
-        writeVideo(writerobj,F);
+%         % visualization
+%         imagesc(im);colormap(gray);tightfig;axis off;
+%         caxis([im_min (im_max-im_min)*brightness_scale+im_min]);
+%         set(gca,'xtick',[],'ytick',[],'position',[0 0 1 1]);
+%         set(hf,'position',[300,300,outputsz(1),outputsz(2)]);
+%         pause(0.01);
+%     
+%         % write file
+%         F = getframe(hf);
+%         writeVideo(writerobj,F);
+        
+        im = uint8(im);
+        writeVideo(writerobj,im);
 
         % register mask
         seg_im = mask(:,:,(i-1)*timeStep*skipStep+(j-1)*skipStep+1);
@@ -106,6 +110,6 @@ for i = 1:tt
 
 end
 
-close(hf);
+% close(hf);
 
 end

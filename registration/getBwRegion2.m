@@ -33,8 +33,8 @@ fgauss = fspecial('gaussian',round(dims/20),round(mean(dims))/50);
 % im = imfilter(im,fgauss);
 
 % substract background, adjust contrast
-im_bkg = imopen(im,strel('disk',15));
-im = im-im_bkg;
+% im_bkg = imopen(im,strel('disk',15));
+% im = im-im_bkg;
 % im = imadjust(im-im_bkg);
 % im = imadjust(im);
 im = adapthisteq(im,'Distribution','uniform');
@@ -58,16 +58,24 @@ bw_conv = imdilate(bw_conv,strel('disk',3));
 % fit ellipse
 rs = regionprops(logical(bw&bw_conv),'orientation','centroid','majoraxislength',...
     'minoraxislength','area','pixellist');
-
-arg = zeros(length(rs),1);
-for i = 1:length(rs)
-    arg(i) = rs(i).Area;
+if isempty(rs)
+    centroid = NaN;
+    theta = NaN;
+    a = NaN;
+    b = NaN;
+    seg_im = NaN(size(im));
+    return;
+else
+    arg = zeros(length(rs),1);
+    for i = 1:length(rs)
+        arg(i) = rs(i).Area;
+    end
+    [~,indx] = max(arg);
+    centroid = rs(indx).Centroid;
+    theta = rs(indx).Orientation;
+    a = rs(indx).MajorAxisLength;
+    b = rs(indx).MinorAxisLength;
 end
-[~,indx] = max(arg);
-centroid = rs(indx).Centroid;
-theta = rs(indx).Orientation;
-a = rs(indx).MajorAxisLength;
-b = rs(indx).MinorAxisLength;
 
 % separate body and tentacles
 theta_rad = pi*theta/180;

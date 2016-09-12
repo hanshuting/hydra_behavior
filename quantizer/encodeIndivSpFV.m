@@ -1,6 +1,12 @@
-function [nFV] = encodeIndivSpFV(fileIndx,lfeat,filepath,gmmpath,namestr,...
-    intran, powern)
+function [nFV] = encodeIndivSpFV(fileIndx,filepath,fvparam)
 % encode fisher vector for individual feature files
+
+% parse input parameter structure
+intran = fvparam.intran;
+powern = fvparam.powern;
+namestr = fvparam.namestr;
+lfeat = fvparam.lfeat;
+gmmpath = fvparam.gmmpath;
 
 % load data
 movieParam = paramAll_galois(fileIndx);

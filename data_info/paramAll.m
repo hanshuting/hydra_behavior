@@ -1,7 +1,8 @@
-function [movieParam] = paramAll(fileind)
+function [movieParam] = paramAll(dpath,fileind)
 
 movieParam = struct;
-[movieParam.filePath,movieParam.fileName,movieParam.numImages,...
+movieParam.filePath = dpath;
+[movieParam.fileName,movieParam.numImages,...
     movieParam.fr,movieParam.imageSize] = fileinfo(fileind);
 
 movieParam.frameStart = 1;
