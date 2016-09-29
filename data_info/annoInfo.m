@@ -1,8 +1,9 @@
-function [annostr] = annoInfo(annoType,num)
+function [annostr,numClass] = annoInfo(annoType,num)
 
 switch annoType
     % annotation version 1
     case 1
+        numClass = 9;
         if num==1
             annostr = 'silent';
         elseif num==2
@@ -26,6 +27,7 @@ switch annoType
         end
     % annotation version 2
     case 2
+        numClass = 9;
         if num==1
             annostr = 'silent';
         elseif num==2
@@ -49,6 +51,7 @@ switch annoType
         end
     % annotation version 3
     case 3
+        numClass = 8;
         if num==1
             annostr = 'silent';
         elseif num==2
@@ -70,6 +73,7 @@ switch annoType
         end
     % annotation version 4
     case 4
+        numClass = 12;
         if num==1
             annostr = 'silent';
         elseif num==2
@@ -99,6 +103,7 @@ switch annoType
         end
     % annotation version 5: low level behavior only
     case 5
+        numClass = 7;
         if num==1
             annostr = 'silent';
         elseif num==2
@@ -118,6 +123,7 @@ switch annoType
         end
     % low level with detailed feeding and ss stage 24 only
     case 6
+        numClass = 10;
         if num==1
             annostr = 'silent';
         elseif num==2
@@ -141,6 +147,31 @@ switch annoType
         else
             warning('unrecognized annotation label!');
         end
+    case 11
+        numClass = 9;
+        if num==1
+            annostr = 'silent';
+        elseif num==2
+            annostr = 'elongation';
+        elseif num==3
+            annostr = 'tentacle sway';
+        elseif num==4
+            annostr = 'body sway';
+        elseif num==5
+            annostr = 'bending';
+        elseif num==6
+            annostr = 'contraction';
+        elseif num==7
+            annostr = 'feeding 1';
+        elseif num==8
+            annostr = 'feeding 2';
+        elseif num==9
+            annostr = 'feeding 3';
+        else
+            warning('unrecognized annotation label!');
+        end
+    otherwise
+        error('unrecognized annotation type');
 end
 
 end
