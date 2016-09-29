@@ -1,4 +1,5 @@
-function [] = writeSVMTestScript(srcpath,datapath,svmname,filenames)
+function [] = writeSVMTestScript(srcpath,datapath,modelpath,svmname,filenames)
+% [] = writeSVMTestScript(srcpath,datapath,modelpath,svmname,filenames)
 % write a bash script to run libSVM on individual test samples
 
 fid = fopen(sprintf('%ssvmClassifyIndv.sh',datapath),'w');
@@ -11,7 +12,7 @@ fprintf(fid,sprintf('IN_FILE="%s%s_"$1""\n',datapath,svmname));
 fprintf(fid,'\n');
 
 fprintf(fid,sprintf('%s/svm-predict -b 1 "$IN_FILE".txt %s%s.model "$IN_FILE"_pred.txt\n',...
-    srcpath,datapath,svmname));
+    srcpath,modelpath,svmname));
 fprintf(fid,'\n');
 
 fprintf(fid,'}\n');
