@@ -831,6 +831,176 @@ switch indx
         numImages = 3500;
         fr = 10;
         sz = [410,417];
+    % -------------------- Medium swap expt --------------------%  
+    % colony in solitary medium
+    case 501
+        fileName = 'medium1_AEPinSolMed06202016';
+        numImages = 8791;
+        fr = 5;
+        sz = [221,177];
+    case 502
+        fileName = 'medium2_AEPinSolmed06212016';
+        numImages = 11249;
+        fr = 5;
+        sz = [287,227];
+    case 503
+        fileName = 'medium3_ColinSolmed06222016';
+        numImages = 9029;
+        fr = 5;
+        sz = [240,176];
+    case 504
+        fileName = 'medium4_ColinSolmed06232016';
+        numImages = 9730;
+        fr = 5;
+        sz = [390,320];
+    % colony in colony medium
+    case 505
+        fileName = 'control1_AEPmedium06092016';
+        numImages = 8424;
+        fr = 5;
+        sz = [275,265];
+    case 506
+        fileName = 'control2_AEPmedium06092016';
+        numImages = 9048;
+        fr = 5;
+        sz = [405,395];
+    case 507
+        fileName = 'control3_AEPmedium06092016';
+        numImages = 10051;
+        fr = 5;
+        sz = [373,490];
+    case 508
+        fileName = 'control4_AEPmedium06142016';
+        numImages = 8879;
+        fr = 5;
+        sz = [220,196];
+    % solitary in solitary medium
+    case 509
+        fileName = 'control1_GCaMPmedium06202016';
+        numImages = 8585;
+        fr = 5;
+        sz = [126,175];
+    case 510
+        fileName = 'control2_GCaMPmedium06212016';
+        numImages = 9625;
+        fr = 5;
+        sz = [170,183];
+    case 511
+        fileName = 'control3_GCaMPSolitarymed06222016';
+        numImages = 11811;
+        fr = 5;
+        sz = [159,135];
+    case 512
+        fileName = 'control4_GCaMPSolitarymed06222016';
+        numImages = 9239;
+        fr = 5;
+        sz = [148,194];
+    % solitary in colony medium
+    case 513
+        fileName = 'medium1_GCaMPinColMed06202016';
+        numImages = 9070;
+        fr = 5;
+        sz = [184,173];
+    case 514
+        fileName = 'medium2_GCaMPinColmed06212016';
+        numImages = 10527;
+        fr = 5;
+        sz = [353,376];
+    case 515
+        fileName = 'medium3_SolinColmed06222016';
+        numImages = 9070;
+        fr = 5;
+        sz = [161,142];
+    case 516
+        fileName = 'medium4_SolinColmed06232016';
+        numImages = 9216;
+        fr = 5;
+        sz = [143,133];
+    % -------------------- Encounter expt --------------------%  
+    % animal 1
+    case 551
+        fileName = 'control1_AEPcolony06072016';
+        numImages = 8086;
+        fr = 5;
+        sz = [402,498];
+    case 552
+        fileName = 'control1_GcaMPsolitary06132016';
+        numImages = 9503;
+        fr = 5;
+        sz = [195,223];
+    case 553
+        fileName = 'encounter1Colonyhalf_06142016';
+        numImages = 7797;
+        fr = 5;
+        sz = [308,268];
+    case 554
+        fileName = 'encounter1Solitaryhalf_06142016';
+        numImages = 7797;
+        fr = 5;
+        sz = [308,154];
+    % animal 2
+    case 555
+        fileName = 'control2_AEPcolony06072016(00178)';
+        numImages = 8918;
+        fr = 5;
+        sz = [408,405];
+    case 556
+        fileName = 'control2_GCaMPsolitary06152016';
+        numImages = 9956;
+        fr = 5;
+        sz = [187,174];
+    case 557
+        fileName = 'encounter2Colonyhalf_06152016';
+        numImages = 8445;
+        fr = 5;
+        sz = [77,103];
+    case 558
+        fileName = 'encounter2Solitaryhalf_06152016';
+        numImages = 8445;
+        fr = 5;
+        sz = [116,97];
+    % animal 3
+    case 559
+        fileName = 'control3_AEPcolony06072016';
+        numImages = 8316;
+        fr = 5;
+        sz = [374,449];
+    case 560
+        fileName = 'control3_GCaMPSolitary06162016';
+        numImages = 7920;
+        fr = 5;
+        sz = [168,190];
+    case 561
+        fileName = 'encounter3Colonyhalf_06162016';
+        numImages = 9465;
+        fr = 5;
+        sz = [294,231];
+    case 562
+        fileName = 'encounter3Solitaryhalf_06162016';
+        numImages = 9465;
+        fr = 5;
+        sz = [274,209];
+    % animal 4
+    case 563
+        fileName = 'control4_AEPcolony06132016(00188)';
+        numImages = 8963;
+        fr = 5;
+        sz = [172,159];
+    case 564
+        fileName = 'control4_GCaMPSolitary06172016';
+        numImages = 9295;
+        fr = 5;
+        sz = [162,148];
+    case 565
+        fileName = 'encounter4Colonyhalf_06162016';
+        numImages = 10417;
+        fr = 5;
+        sz = [131,131];
+    case 566
+        fileName = 'encounter4Solitaryhalf_06162016';
+        numImages = 10417;
+        fr = 5;
+        sz = [163,145];
     otherwise
         error('file does not exist');
 end
