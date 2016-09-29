@@ -35,21 +35,21 @@ function [zValues,zCosts,zGuesses,inConvHull,meanMax,exitFlags] = ...
         tCosts = zeros(size(idx));
         current_poly = false(length(idx),1);
         
-        D2 = findListKLDivergences(currentData,trainingData); % modified here
-%         switch parameters.distType
-%             case 'chi'
-%                 D2 = double(chiSquare(currentData,trainingData));
-%             case 'euc'
-%                 D2 = double(pdist2(currentData,trainingData));
-%             case 'int'
-%                 D2 = double(1-intersection(currentData,trainingData));
-%             case 'cos'
-%                 D2 = double(pdist2(currentData,trainingData,'cosine'));
-%             case 'corr'
-%                 D2 = double(pdist2(currentData,trainingData,'correlation'));
-%             otherwise
-%                 error('invalid distance type');
-%         end
+%         D2 = findListKLDivergences(currentData,trainingData); % modified here
+        switch parameters.distType
+            case 'chi'
+                D2 = double(chiSquare(currentData,trainingData));
+            case 'euc'
+                D2 = double(pdist2(currentData,trainingData));
+            case 'int'
+                D2 = double(1-intersection(currentData,trainingData));
+            case 'cos'
+                D2 = double(pdist2(currentData,trainingData,'cosine'));
+            case 'corr'
+                D2 = double(pdist2(currentData,trainingData,'correlation'));
+            otherwise
+                error('invalid distance type');
+        end
         current_meanMax = zeros(length(idx),1);
         
         parfor i=1:length(idx)
