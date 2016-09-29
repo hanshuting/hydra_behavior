@@ -6,17 +6,17 @@ rng(1000);
 %% set path
 addpath(genpath('/home/sh3276/work/code/hydra_behavior'));
 addpath(genpath('/home/sh3276/software/inria_fisher_v1/yael_v371/matlab'));
-addpath(genpath('/home/sh3276/software/MotionMapper/'));
+addpath(genpath('/home/sh3276/work/code/other_sources/'))
 
 %% setup parameters
 param = struct();
 
 % file information
-param.fileIndx = [1:5,7:11,13:28,30:34];
-param.trainIndx = [1:5,7:11,13:24,26:28,30:32];
-param.testIndx = [25,33,34];
+param.fileIndx = [1:5,7:11,13:28,30:56];
+param.trainIndx = [1:5,7:11,13:24,26:28,30:32,34:55];
+param.testIndx = [25,33,56];
 
-param.datastr = '20160912';
+param.datastr = '20160927';
 
 param.dpathbase = '/home/sh3276/work/data';
 param.pbase = '/home/sh3276/work/results';
@@ -30,6 +30,8 @@ param.svmpath = sprintf('%s/svm/%s/',param.pbase,param.datastr);
 param.tsnepath = sprintf('%s/tsne/%s/',param.pbase,param.datastr);
 param.annopath = sprintf('%s/annotations/',param.dpathbase);
 param.parampath = sprintf('%s/param/',param.pbase);
+
+param.wbmap = '/home/sh3276/work/results/wbmap.mat'; %'C:\Shuting\results\wbmap.mat';
 
 % segmentation/registration parameters
 param.seg.numRegion = 3;
@@ -65,7 +67,7 @@ param.fv.numPatch = param.dt.s^2*param.dt.t;
 % SVM parameters
 param.svm.src = '/home/sh3276/software/libsvm';
 param.svm.percTrain = 0.9;
-param.svm.kernel = 3; % rbf kernel
+param.svm.kernel = 2; % 0 linear, 1 polynomial, 2 rbf, 3 sigmoid
 param.svm.probest = 1; % true
 param.svm.name = [param.infostr '_drFVall_annoType' num2str(param.annotype)];
 
@@ -76,12 +78,13 @@ param.tsne.perplexity = 16;
 param.tsne.training_perplexity = 16;
 param.tsne = setRunParameters(param.tsne);
 param.tsne.percTrain = 0.8;
+param.tsne.annotype = 6;
 
 %% check if all directories exist
 if exist(param.dpath,'dir')~=7
     error('Incorrect data path')
 end
-if exist(param.anno.path,'dir')~=7
+if exist(param.annopath,'dir')~=7
     error('Incorrect annotation path')
 end
 if exist(param.segpath,'dir')~=7
@@ -115,6 +118,7 @@ end
 
 % save parameters to file
 dispStructNested(param,[],[param.parampath 'expt_param_' param.datastr '.txt']);
+save([param.parampath 'expt_param_' param.datastr '.mat'],'param');
 
 %% segmentation and registration
 numfile = length(param.fileIndx);
@@ -148,7 +152,7 @@ end
 writeDTscript(param);
 
 % run DT
-try 
+try
 %     system(sprintf('chmod +x %srunDT.sh',param.dtpath));
     status = system(sprintf('bash %srunDT.sh',param.dtpath));
 catch ME
@@ -282,7 +286,7 @@ for n = 1:length(param.testIndx)
     testnames = [testnames sprintf('"%s" ',fileinfo(param.testIndx(n)))];
 end
 testnames = testnames(1:end-1);
-writeSVMTestScript(param.svm.src,param.svmpath,param.svm.name,testnames);
+writeSVMTestScript(param.svm.src,param.svmpath,param.svmpath,param.svm.name,testnames);
 try 
     status = system(sprintf('bash %ssvmClassifyIndv.sh',param.svmpath));
 catch ME
@@ -295,21 +299,22 @@ pred = struct();
 pred_score = struct();
 anno.train = label(indxTrain);
 anno.test = label(indxTest);
-[pred.train,pred_score.train] = saveSVMpred(param.svmpath,[param.svm.name '_train']);
-[pred.test,pred_score.test] = saveSVMpred(param.svmpath,[param.svm.name '_test']);
+[pred.train,pred_score.train,pred.train_soft] = saveSVMpred(param.svmpath,[param.svm.name '_train']);
+[pred.test,pred_score.test,pred.test_soft] = saveSVMpred(param.svmpath,[param.svm.name '_test']);
 for n = 1:length(param.testIndx)
     movieParam = paramAll(param.dpath,param.testIndx(n));
     annoAll = annoMulti({movieParam},param.annopath,param.annotype,param.timeStep);
     anno.new{n} = annoAll(annoAll~=0);
-    [pred.new{n},pred_score.new{n}] = saveSVMpred(param.svmpath,...
+    [pred.new{n},pred_score.new{n},pred.new_soft{n}] = saveSVMpred(param.svmpath,...
         [param.svm.name '_' fileinfo(param.testIndx(n))]);
 end
 
-save([param.svmpath 'mat_results.mat'],'pred','pred_score','anno','-v7.3');
+save([param.svmpath 'annotype' num2str(param.annotype) '_mat_results.mat'],...
+    'pred','pred_score','anno','-v7.3');
 
 %% SVM analysis
 % confusion matrix and stats
-load([param.svmpath 'mat_results.mat']);
+load([param.svmpath 'annotype' num2str(param.annotype) '_mat_results.mat']);
 numClass = max(anno.train);
 svm_stats = struct();
 cmat = struct();
@@ -328,32 +333,55 @@ end
 
 [svm_stats.acr_all.new_all,svm_stats.prc.new_all,svm_stats.rec.new_all,...
     svm_stats.acr.new_all,cmat.new_all] = precisionrecall...
-    (cell2mat(pred.new'),cell2mat(anno.new),numClass);
+    (cell2mat(pred.new'),cell2mat(anno.new'),numClass);
+
+% soft accuracy
+svm_stats.acr_all.train_soft = sum(anno.train==pred.train_soft(:,1)|...
+    anno.train==pred.train_soft(:,2)|anno.train==pred.train_soft(:,3))/length(anno.train);
+svm_stats.acr_all.test_soft = sum(anno.test==pred.test_soft(:,1)|...
+    anno.test==pred.test_soft(:,2)|anno.test==pred.test_soft(:,3))/length(anno.test);
+for n = 1:length(param.testIndx)
+    svm_stats.acr_all.new_soft(n) = sum(anno.new{n}==pred.new_soft{n}(:,1)|...
+        anno.new{n}==pred.new_soft{n}(:,2)|anno.new{n}==pred.new_soft{n}(:,3))/length(anno.new{n});
+end
+sp = cell2mat(pred.new_soft');
+an = cell2mat(anno.new');
+svm_stats.acr_all.new_all_soft = sum(an==sp(:,1)|an==sp(:,2)|an==sp(:,3))/length(an);
+
+%% plots
+disp(svm_stats.acr_all);
+fprintf('Precision:\n');
+disp(table(svm_stats.prc.train,svm_stats.prc.test,svm_stats.prc.new_all,...
+    'variablenames',{'train','test','new'}));
+fprintf('Recall:\n');
+disp(table(svm_stats.rec.train,svm_stats.rec.test,svm_stats.rec.new_all,...
+    'variablenames',{'train','test','new'}));
+fprintf('Accuracy:\n');
+disp(table(svm_stats.acr.train,svm_stats.acr.test,svm_stats.acr.new_all,...
+    'variablenames',{'train','test','new'}));
 
 % plot confusion matrix
+load(param.wbmap);
 num_plts = max([length(param.testIndx),3]);
 figure;set(gcf,'color','w')
-subplottight(2,num_plts,1)
-plotcmat(cmat.train,label(indxTrain),pred.train)
-title('Train')
-subplottight(2,num_plts,2)
-plotcmat(cmat.test,label(indxTest),pred.test)
-title('Test')
-subplottight(2,num_plts,3)
-plotcmat(cmat.new_all,cell2mat(anno.new),cell2mat(pred.new'))
-title('New')
+subplot(2,num_plts,1)
+plotcmat(cmat.train,wbmap);title('Train');colorbar off
+% gcapos = get(gca,'position');colorbar off; set(gca,'position',gcapos);
+subplot(2,num_plts,2)
+plotcmat(cmat.test,wbmap);title('Test');colorbar off
+% gcapos = get(gca,'position');colorbar off; set(gca,'position',gcapos);
+subplot(2,num_plts,3)
+plotcmat(cmat.new_all,wbmap);title('New');colorbar off
 for n = 1:length(param.testIndx)
-    subplottight(2,num_plts,length(param.testIndx)+n)
-    plotcmat(cmat.new{n},anno.new{n},pred.new{n});
-    title(['New #' num2str(n)])
+    subplot(2,num_plts,length(param.testIndx)+n)
+    plotcmat(cmat.new{n},wbmap);
+    title(['New #' num2str(n)]);colorbar off
+%     gcapos = get(gca,'position');colorbar off;set(gca,'position',gcapos)
 end
-set(findall(gcf,'-property','FontSize'),'FontSize',8)
-
-disp(svm_stats.acr_all);
-% stats_tb = table(svm_stats(:).acr);
+set(findall(gcf,'-property','FontSize'),'FontSize',9)
 
 % ROC curve
-figure;
+figure;set(gcf,'color','w')
 subplot(1,3,1)
 auc.train = plotROCmultic(anno.train,pred_score.train,numClass);
 legend('off')
@@ -364,15 +392,73 @@ subplot(1,3,3)
 auc.new = plotROCmultic(cell2mat(anno.new'),cell2mat(pred_score.new'),numClass);
 
 % save results
-save([param.svmpath 'stats.mat'],'svm_stats','cmat','auc','-v7.3');
+save([param.svmpath 'annotype' num2str(param.annotype) '_stats.mat'],'svm_stats','cmat','-v7.3');
+
+%% plot ethogram
+figure; set(gcf,'color','w')
+for n = 1:length(param.testIndx)
+    subplot(length(param.testIndx),1,n); hold on
+    plotEthogram(pred.new{n},param.annotype);
+end
+
+%% somersaulting
+% read annotation
+fileind = 20;
+annoType = 5;
+timeStep = 25;
+movieParam = paramAll(fileind);
+annoPath = 'C:\Shuting\Data\freely_moving\individual_samples\annotations\';
+annoRaw = annoMulti({movieParam},annoPath,timeStep,0);
+annoAll = mergeAnno(annoRaw,4); % this scheme has a detaild ss description
+
+% take out time window
+sstw = floor(900/timeStep):floor(2100/timeStep); % file 20
+%sstw = floor(2000/timeStep):floor(4562/timeStep); % file 21
+%sstw = floor(1500/timeStep):floor(end/timeStep); % file 22
+sspredict = softPrediction(sstw,:);
+
+% make sentence
+sspredict_word = cell(size(sspredict));
+for i = 1:size(sspredict,1)
+    for j = 1:size(sspredict,2)
+        if ~isnan(sspredict(i,j))
+            sspredict_word{i,j} = annoInfo(annoType,sspredict(i,j));
+        end
+    end
+end
+
+% print sentence
+for i = 1:size(sspredict,1)
+    fprintf('%s',sspredict_word{i,1});
+    for j = 2:size(sspredict,2)
+        if ~isnan(sspredict(i,j))
+            fprintf('/%s',sspredict_word{i,j});
+        end
+    end
+    if i~=size(sspredict,1)
+        fprintf(' -> \n');
+    else
+        fprintf('\n');
+    end
+end
+
+
+% visualize
+makeAnnotatedMovie(sstw,sspredict,annoType,movieParam,timeStep,0.1,1);
 
 %% embedding
 fparam = struct();
 fparam.filepath = param.fvpath;
 fparam.infostr = param.infostr;
-fparam.fileIndx = param.fileIndx;
+fparam.trainIndx = param.trainIndx;
+fparam.testIndx = param.testIndx;
+fparam.dpath = param.dpath;
 fparam.tsnepath = param.tsnepath;
 fparam.datastr = param.datastr;
+fparam.annopath = param.annopath;
+fparam.timeStep = 25;
+fparam.K = param.fv.K;
+
 
 runFVtsne(fparam,param.tsne);
 
