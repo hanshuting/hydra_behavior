@@ -129,6 +129,18 @@ switch mergetype
         annoAll(annoRaw==63|annoRaw==64|annoRaw==65|annoRaw==66|annoRaw==54|...
             annoRaw==72|annoRaw==73) = 6; % contraction
         annoAll(annoRaw==92|annoRaw==93) = 7; % feeding
+    case 11
+        annoAll(annoRaw==10|annoRaw==11|annoRaw==12|annoRaw==13|annoRaw==14) = 1; % silent
+        annoAll(annoRaw==21|annoRaw==22|annoRaw==23|annoRaw==24|annoRaw==25) = 2; % elongation
+        annoAll(annoRaw==31|annoRaw==32|annoRaw==53|annoRaw==55|annoRaw==61|...
+            annoRaw==62) = 3; % tentacle sway
+        annoAll(annoRaw==51|annoRaw==52|annoRaw==56) = 4; % body sway
+        annoAll(annoRaw==41|annoRaw==42) = 5; % bending
+        annoAll(annoRaw==63|annoRaw==64|annoRaw==65|...
+            annoRaw==66|annoRaw==54) = 6; % contraction
+        annoAll(annoRaw==91) = 7; % feeding 1
+        annoAll(annoRaw==92) = 8; % feeding 2
+        annoAll(annoRaw==93) = 9; % feeding 3
     otherwise
         error('invalid annotation merging scheme');
 end
