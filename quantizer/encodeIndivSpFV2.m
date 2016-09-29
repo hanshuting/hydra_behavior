@@ -9,10 +9,10 @@ lfeat = fvparam.lfeat;
 gmmpath = fvparam.gmmpath;
 
 % load data
-movieParam = paramAll_galois(fileIndx);
+fname = fileinfo(fileIndx);
 gmm = load([gmmpath namestr 'GMM.mat']);
 load([gmmpath namestr 'Coeff.mat']);
-data = load([filepath movieParam.fileName '_' namestr '.mat']);
+data = load([filepath fname '_' namestr '.mat']);
 data = struct2cell(data);
 data = data{1};
 data = cellfun(@double,data,'uniformoutput',false);

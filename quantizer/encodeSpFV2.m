@@ -34,10 +34,10 @@ acm = zeros(length(fileIndx)+1,1);
 fdims = [];
 for i = 1:length(fileIndx)
 
-    movieParam = paramAll_galois(fileIndx(i));
-    fprintf('loading sample: %s\n', movieParam.fileName);
+    fname = fileinfo(fileIndx(i));
+    fprintf('loading sample: %s\n', fname);
 
-    data = load([filepath movieParam.fileName '_' namestr '.mat']);
+    data = load([filepath fname '_' namestr '.mat']);
     data = struct2cell(data);
     data = data{1};
     data = cellfun(@double,data,'uniformoutput',false);
