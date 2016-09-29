@@ -1,4 +1,5 @@
-function [] = plotTsneDens(dens,im_mask,cmax)
+function [] = plotTsneDens(xx,dens,im_mask,cmax)
+% plotTsneDens(xx,dens,im_mask,cmax)
 % plot the given density map matrix on current axis handle
 
 % fill empty regions with NaNs

@@ -3,9 +3,8 @@ function [] = runFVtsne(param,tsne_param)
 
 filepath = param.filepath;
 infostr = param.infostr;
-fileIndx = param.fileIndx;
-tsnepath = param.tsnepath;
-datastr = param.datastr;
+trainIndx = param.trainIndx;
+testIndx = param.testIndx;
 num_new = length(param.testIndx);
 
 %% load data
@@ -21,7 +20,7 @@ load([filepath infostr '_pcaCoeff.mat']);
 percTrain = tsne_param.percTrain;
 dataTrain = [];
 dataTest = [];
-numFiles = length(fileIndx);
+numFiles = length(trainIndx);
 dataAll = cell(numFiles,1);
 
 % normalize data
@@ -129,15 +128,15 @@ im = densTrain;
 map_thresh = 0.4;
 im_mask = im>quantile(im(:),map_thresh);
 
-% plot overall, training, test density
+%% plot overall, training, test density
 cmax = max(densAll(:))*0.8;
 figure;set(gcf,'color','w')
 subplot(1,3,1)
-plotTsneDens(densAll,im_mask,cmax); title('all embedding')
+plotTsneDens(xx,densAll,im_mask,cmax); title('all embedding')
 subplot(1,3,2)
-plotTsneDens(densTrain,im_mask,cmax); title('training embedding')
+plotTsneDens(xx,densTrain,im_mask,cmax); title('training embedding')
 subplot(1,3,3)
-plotTsneDens(densTest,im_mask,cmax); title('test embedding')
+plotTsneDens(xx,densTest,im_mask,cmax); title('test embedding')
 
 % plot individual plot
 figure;set(gcf,'color','w')
@@ -145,7 +144,7 @@ N = ceil(sqrt(numFiles));
 M = ceil(numFiles/N);
 for ii = 1:numFiles
     subplot(M,N,ii)
-    plotTsneDens(densIndiv(:,:,ii),im_mask,cmax)
+    plotTsneDens(xx,densIndiv(:,:,ii),im_mask,20*cmax)
     title(['Data Set #' num2str(ii)],'fontsize',8); %,'fontweight','bold');
 end
 
@@ -153,7 +152,7 @@ end
 figure;set(gcf,'color','w')
 for ii = 1:length(emDataNew)
     subplot(1,length(emDataNew),ii)
-    plotTsneDens(densNew(:,:,ii),im_mask,cmax)
+    plotTsneDens(xx,densNew(:,:,ii),im_mask,20*cmax)
     title(['New Data Set #' num2str(ii)],'fontsize',8); %,'fontweight','bold');
 end
 
@@ -178,7 +177,8 @@ numClass = length(unique(seg_im(:)))-1;
 
 %% compare with annotation, make large clusters
 % compare with manual annotation
-annoAll = annoMulti(movieParamMulti,param.annopath,param.annotype,timeStep);
+movieParamMulti = paramMulti(param.dpath,param.trainIndx);
+annoAll = annoMulti(movieParamMulti,param.annopath,tsne_param.annotype,param.timeStep);
 numAnnoClass = max(annoAll);
 
 % find the majority label in each region
@@ -223,37 +223,47 @@ for qIndx = 1:length(testIndx);
     regIndxNew{qIndx} = region_im_trans(sub2ind(size(im),vdata(:,1),vdata(:,2)));
 
     % annotation
-    annoNew{qIndx} = annoMulti(paramMulti(testIndx(qIndx)),annoPath,annoType,timeStep);
+    annoNew{qIndx} = annoMulti(paramMulti(param.dpath,testIndx(qIndx)),...
+        param.annopath,tsne_param.annotype,param.timeStep);
     for ii = 1:numRegions
-        newRegCount(ii,:) = newRegCount(ii,:)+reshape(histc(annoNew{qIndx}(regIndx==ii),...
+        newRegCount(ii,:) = newRegCount(ii,:)+reshape(histc(annoNew{qIndx}(regIndxNew{qIndx}==ii),...
             0.5:1:numAnnoClass+0.5),1,numAnnoClass+1);
     end
-
+    
 end
 newRegCount = newRegCount(:,1:end-1);
 newRegCount = newRegCount./(sum(newRegCount,2)*ones(1,size(newRegCount,2)));
 
 %% plot density and segmentation
 figure;set(gcf,'color','w')
+gscatter(emDataTrain(:,1),emDataTrain(:,2),annoTrain);
+xlim([xx(1) xx(end)]);ylim([xx(1) xx(end)])
+axis equal tight
+
+figure;set(gcf,'color','w')
 subplot(2,2,1)
 title('tSNE density')
-plotTsneDens(im,im_mask,cmax)
+plotTsneDens(xx,im,im_mask,cmax)
 subplot(2,2,2)
-plotTsneDens(im.*(~seg_bound),im_mask,cmax)
+plotTsneDens(xx,im.*(~seg_bound),im_mask,cmax)
 title('watershed segmentation');
 subplot(2,2,3)
-plotRegionLabel(seg_im,im_mask,xx)
+plotRegionLabel(xx,seg_im,im_mask)
 title('watershed segmentation')
 subplot(2,2,4)
-plotTsneDens(double(reg_im).*(~seg_bound),im_mask,cmax)
+plotTsneDens(xx,double(reg_im).*(~seg_bound),im_mask,numRegions)
 title('merged regions')
 
 %% plot merged region validation
 figure;set(gcf,'color','w','position',[2032,809,990,117])
 
 % training data
+vdata = emDataTrainCent;
+vdata = round((vdata/maxVal*numPoints+numPoints)/2);
+vdata(vdata<=0) = 1;
+vdata(vdata>=numPoints) = numPoints;
 regIndx = region_im_trans(sub2ind(size(im),vdata(:,1),vdata(:,2)));
-plotTrueLabelValidation(regIndx,annoTrain,numRegions,numAnnoClass,num_new+2,1)
+plotTrueLabelValidation(regIndx,annoTrain,numRegions,numAnnoClass,3,1)
 
 % test data
 vdata = emDataTestCent;
@@ -261,12 +271,14 @@ vdata = round((vdata/maxVal*numPoints+numPoints)/2);
 vdata(vdata<=0) = 1;
 vdata(vdata>=numPoints) = numPoints;
 regIndx = region_im_trans(sub2ind(size(im),vdata(:,1),vdata(:,2)));
-plotTrueLabelValidation(regIndx,annoTest,numRegions,numAnnoClass,num_new+2,2)
+plotTrueLabelValidation(regIndx,annoTest,numRegions,numAnnoClass,3,2)
 
 % new data
-for ii = 1:num_new
-    plotTrueLabelValidation(regIndxNew{ii},annoNew{ii},numRegions,numAnnoClass,num_new+2,2+ii)
-end
+plotTrueLabelValidation(cell2mat(regIndxNew),cell2mat(annoNew),...
+    numRegions,numAnnoClass,3,3);
+% for ii = 1:num_new
+%     plotTrueLabelValidation(regIndxNew{ii},annoNew{ii},numRegions,numAnnoClass,num_new+2,2+ii)
+% end
 
 %% plot annotation density
 densAnno = zeros(numPoints,numPoints,numAnnoClass);
@@ -295,8 +307,13 @@ end
 % visualizeResultMulti(find(regIndx==qlabel),timeStep,movieParamMulti,1,1,num2str(qlabel));
 
 %% save results
-save([tsnepath infostr '_K_' num2str(K) '_' datastr '_emspace.mat'],'region_im_trans','xx','parameters',...
-    'maxVal','mu','numPoints');
-save([tsnepath infostr '_K_' num2str(K) '_' datastr '_tsneTrain.mat'],'emDataTrain','dataTrain','-v7.3');
+save([param.tsnepath param.infostr '_K_' num2str(param.K) '_' param.datastr...
+    '_emspace.mat'],'region_im_trans','xx','tsne_param','maxVal','mu','numPoints');
+save([param.tsnepath param.infostr '_K_' num2str(param.K) '_' param.datastr...
+    '_tsneTrain.mat'],'emDataTrain','dataTrain','-v7.3');
+
+save([param.tsnepath param.infostr '_K_' num2str(param.K) '_' param.datastr...
+    '_workspace.mat'],'-v7.3');
 
 end
+
