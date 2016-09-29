@@ -1,4 +1,4 @@
-function [wei_str] = mkLibSVMsample(sample,percTrain,annoAll,savename,savepath)
+function [wei_str,indxTrain,indxTest] = mkLibSVMsample(sample,percTrain,annoAll,savename,savepath)
 
 
 % exclude 0 class
