@@ -33,9 +33,13 @@ for i = 1:tt
         data_slice = imtranslate(data_slice,int8([dims(2)/2-avg_cent(1)...
             dims(1)/2-avg_cent(2)]));
         data_slice(data_slice==0) = NaN;
-        reg_slice = imrotate(data_slice,avg_theta,'crop');
-        reg_slice(isnan(reg_slice)) = 0;
-        reg_data(:,:,(i-1)*timeStep+j) = uint8(reg_slice);
+        if isnan(avg_theta)
+            reg_data(:,:,(i-1)*timeStep+j) = uint8(data_slice);
+        else
+            reg_slice = imrotate(data_slice,avg_theta,'crop');
+            reg_slice(isnan(reg_slice)) = 0;
+            reg_data(:,:,(i-1)*timeStep+j) = uint8(reg_slice);
+        end
     end
     
     % update progress text

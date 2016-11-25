@@ -10,15 +10,16 @@ W = dtparam.W;
 N = dtparam.N;
 tlen = dtparam.tlen;
 thresh = dtparam.thresh;
+timeStep = tlen*movieParam.fr;
 
 % file information
 infostr = ['L_' num2str(L) '_W_' num2str(W) '_N_' num2str(N) '_s_' num2str(s) '_t_' num2str(t)];
 trackInfo = dir([filepath movieParam.fileName '_' num2str(tlen)...
     's_' num2str(thresh) '_' infostr '/*.txt']);
-numVideo = size(trackInfo,1);
+% numVideo = size(trackInfo,1);
+numVideo = floor(movieParam.numImages/timeStep);
 
 % DT feature information
-timeStep = tlen*movieParam.fr;
 numPatch = s*s*t;
 sTraj = 2*L;
 sCoord = 2*L;
@@ -40,7 +41,7 @@ dims = size(segmat);
 for i = 1:numVideo
     
     % if file empty, put NaN
-    if trackInfo(i).bytes==124
+    if trackInfo(i).bytes==186 || trackInfo(i).bytes==0
         
         fprintf('feature file is empty: %s\n',trackInfo(i).name);
         crTraj = nan(1,sTraj);

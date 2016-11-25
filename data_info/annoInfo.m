@@ -170,6 +170,23 @@ switch annoType
         else
             warning('unrecognized annotation label!');
         end
+    case 12
+        numClass = 6;
+        if num==1
+            annostr = 'silent';
+        elseif num==2
+            annostr = 'elongation';
+        elseif num==3
+            annostr = 'tentacle sway';
+        elseif num==4
+            annostr = 'body sway';
+        elseif num==5
+            annostr = 'bending';
+        elseif num==6
+            annostr = 'contraction';
+        else
+            warning('unrecognized annotation label!');
+        end
     otherwise
         error('unrecognized annotation type');
 end

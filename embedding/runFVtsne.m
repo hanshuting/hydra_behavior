@@ -132,9 +132,9 @@ im_mask = im>quantile(im(:),map_thresh);
 cmax = max(densAll(:))*0.8;
 figure;set(gcf,'color','w')
 subplot(1,3,1)
-plotTsneDens(xx,densAll,im_mask,cmax); title('all embedding')
+plotTsneDens(xx,densAll,im_mask,cmax); title('all embedding'); colorbar('off')
 subplot(1,3,2)
-plotTsneDens(xx,densTrain,im_mask,cmax); title('training embedding')
+plotTsneDens(xx,densTrain,im_mask,cmax); title('training embedding'); colorbar('off')
 subplot(1,3,3)
 plotTsneDens(xx,densTest,im_mask,cmax); title('test embedding')
 
@@ -146,6 +146,9 @@ for ii = 1:numFiles
     subplot(M,N,ii)
     plotTsneDens(xx,densIndiv(:,:,ii),im_mask,20*cmax)
     title(['Data Set #' num2str(ii)],'fontsize',8); %,'fontweight','bold');
+    if ii~=numFiles
+        colorbar('off');
+    end
 end
 
 % new samples
@@ -154,6 +157,9 @@ for ii = 1:length(emDataNew)
     subplot(1,length(emDataNew),ii)
     plotTsneDens(xx,densNew(:,:,ii),im_mask,20*cmax)
     title(['New Data Set #' num2str(ii)],'fontsize',8); %,'fontweight','bold');
+    if ii~=length(emDataNew)
+        colorbar('off');
+    end
 end
 
 %% segment density plots

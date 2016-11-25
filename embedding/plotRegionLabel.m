@@ -3,13 +3,12 @@ function [] = plotRegionLabel(xx,seg_im,im_mask)
 
 numPoints = length(xx);
 im = double(seg_im);
-im(im_mask==0) = NaN;
-im(im==0) = NaN;
-im(~isnan(im)) = 1;
-pcolor(xx,xx,im);
+im = double(im~=0);
+im(im_mask==0) = -1;
+imagesc(xx,xx,2-im);
 colormap(gca,gray);
-shading flat
-axis equal tight off xy
+caxis([-1 2])
+axis equal tight xy
 title('watershed segmentation');
 region_cent = regionprops(double(seg_im).*double(im_mask),'Centroid');
 for i = 1:length(region_cent)

@@ -29,19 +29,23 @@ im = mat2gray(im);
 % smooth image
 % sig = 1;
 % fgauss = fspecial('gauss',4*sig+1,sig);
-fgauss = fspecial('gaussian',round(dims/20),round(mean(dims))/50);
+fgauss = fspecial('gaussian',3,1);
 % im = imfilter(im,fgauss);
 
 % substract background, adjust contrast
-% im_bkg = imopen(im,strel('disk',15));
-% im = im-im_bkg;
-% im = imadjust(im-im_bkg);
+im_bkg = imopen(im,strel('disk',15));
+im = im-im_bkg;
+im = imadjust(im-im_bkg);
 % im = imadjust(im);
-im = adapthisteq(im,'Distribution','uniform');
+% im = adapthisteq(im,'Distribution','uniform'); % - comment for night dataset
+% im = wiener2(im); % - for night dataset
 
 % threshold intensity
-thresh = multithresh(im,1);
-bw = im>thresh(1);
+% thresh = multithresh(im,1);
+% bw = im>thresh(1);
+% im_seg = EMSeg(im,3);
+im_seg = reshape(kmeans(im(:),3),dims(1),dims(2));
+bw = im_seg~=mode(im_seg(:));
 
 % threshold area
 bw = bwareaopen(bw,P);
@@ -84,10 +88,12 @@ f1 = centroid+[f*cos(theta_rad),-f*sin(theta_rad)];
 f2 = centroid-[f*cos(theta_rad),-f*sin(theta_rad)];
 rs_bwfull = regionprops(bw,'pixellist');
 bwpixel_all = cell2mat(struct2cell(rs_bwfull)');
+
 % ellipse region
 bodyindx = pdist2(bwpixel_all,f1)+pdist2(bwpixel_all,f2)<=a;
 ellp_region = zeros(dims);
 ellp_region(sub2ind(dims,bwpixel_all(bodyindx,2),bwpixel_all(bodyindx,1))) = 1;
+
 % whole body region
 bwfull_area = zeros(length(rs_bwfull),1);
 for i = 1:length(rs_bwfull)
@@ -100,13 +106,14 @@ end
 bwfull_pixels = rs_bwfull(bw_indx).PixelList;
 bwbody = zeros(dims);
 bwbody(sub2ind(dims,bwfull_pixels(:,2),bwfull_pixels(:,1))) = 1;
-% non ellipse region
 non_ellp_region = bwbody&(~ellp_region);
 
 %% registration
 % generate patchs
 rg(1,:) = [-a a a -a -a]/2;
 rg(2,:) = [-a -a a a -a]/2;
+% rg(1,:) = [-b b a -b -b]/2;
+% rg(2,:) = [-b -b a b -b]/2;
 rg = [cos(-theta_rad) -sin(-theta_rad);sin(-theta_rad) cos(-theta_rad)]*rg;
 
 % edge around first patch
@@ -127,7 +134,20 @@ else
     upper_mask = mask1;
 end
 
+%% body parts
+upper_body = ellp_region&upper_mask;
+lower_body = bwbody&lower_mask;
+tent_region = bwbody&(~lower_body)&(~upper_body);
+
+seg_im = NaN(dims);
+seg_im(lower_body) = 1;
+seg_im(upper_body) = 2;
+seg_im(tent_region) = 3;
+seg_im(isnan(seg_im)) = 0;
+
+
 %% segment body parts
+if 0
 % over-segment the image
 bwskel = bwmorph(bw,'skel',Inf);
 bcp = bwmorph(bwskel,'branchpoint');
@@ -165,6 +185,8 @@ for i = 1:cc.NumObjects
     end
 end
 
+% body_patch = bwbody;
+
 upper_body = body_patch&upper_mask;
 lower_body = body_patch&lower_mask;
 tent_region = non_ellp_region&(~lower_body)&(~upper_body);
@@ -174,6 +196,8 @@ seg_im(lower_body) = 1;
 seg_im(upper_body) = 2;
 seg_im(tent_region) = 3;
 seg_im(isnan(seg_im)) = 0;
+
+end
 
 %% visualization
 if ifvisualize

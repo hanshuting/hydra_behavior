@@ -13,10 +13,10 @@ param = struct();
 
 % file information
 param.fileIndx = [1:5,7:11,13:28,30:56];
-param.trainIndx = [1:5,7:11,13:24,26:28,30:32,34:55];
-param.testIndx = [25,33,56];
+param.trainIndx = [1:5,7:11,13:24,26:28,30:32,34:54,56];
+param.testIndx = [25,33,55];
 
-param.datastr = '20160927';
+param.datastr = '20161019';
 
 param.dpathbase = '/home/sh3276/work/data';
 param.pbase = '/home/sh3276/work/results';
@@ -31,7 +31,8 @@ param.tsnepath = sprintf('%s/tsne/%s/',param.pbase,param.datastr);
 param.annopath = sprintf('%s/annotations/',param.dpathbase);
 param.parampath = sprintf('%s/param/',param.pbase);
 
-param.wbmap = '/home/sh3276/work/results/wbmap.mat'; %'C:\Shuting\results\wbmap.mat';
+param.wbmap = '/home/sh3276/work/results/wbmap.mat';
+% param.wbmap = 'C:\Shuting\Projects\hydra behavior\results\wbmap.mat';
 
 % segmentation/registration parameters
 param.seg.numRegion = 3;
@@ -126,6 +127,7 @@ numfile = length(param.fileIndx);
 % segmentation
 for n = 1:numfile
     movieParam = paramAll(param.dpath,param.fileIndx(n));
+    fprintf('segmentation of %s...\n',movieParam.fileName);
     [segAll,theta,centroid,a,b] = runBPSegmentation(movieParam);
     save([param.segpath movieParam.fileName '_seg.mat'],'segAll','theta',...
         'centroid','a','b','-v7.3');
@@ -133,7 +135,7 @@ end
 
 % make registered video clips
 for n = 1:numfile
-
+    
     movieParam = paramAll(param.dpath,param.fileIndx(n));
     fprintf('processing %s...\n',movieParam.fileName);
     
@@ -144,7 +146,7 @@ for n = 1:numfile
         param.dpath,param.segpath,param.segvidpath,param.seg.ifscale,param.seg.outputsz);
     save([param.segpath movieParam.fileName '_scaled_reg_seg_step_' ...
         num2str(param.timeStep) '.mat'],'segmat','-v7.3');
-
+    
 end
 
 %% run Dense Trajectories in terminal
@@ -315,6 +317,7 @@ save([param.svmpath 'annotype' num2str(param.annotype) '_mat_results.mat'],...
 %% SVM analysis
 % confusion matrix and stats
 load([param.svmpath 'annotype' num2str(param.annotype) '_mat_results.mat']);
+
 numClass = max(anno.train);
 svm_stats = struct();
 cmat = struct();
@@ -335,7 +338,20 @@ end
     svm_stats.acr.new_all,cmat.new_all] = precisionrecall...
     (cell2mat(pred.new'),cell2mat(anno.new'),numClass);
 
-% soft accuracy
+% soft
+% [svm_stats.acr_all.train_soft,svm_stats.prc.train_soft,svm_stats.rec.train_soft,...
+%     svm_stats.acr.train_soft,cmat.train_soft] = precisionrecall(pred.train_soft,...
+%     anno.train_soft,numClass);
+% [svm_stats.acr_all.test,svm_stats.prc.test,svm_stats.rec.test,...
+%     svm_stats.acr.test,cmat.test] = precisionrecall(pred.test,anno.test,numClass);
+% for n = 1:length(param.testIndx)
+%     movieParam = paramAll(param.dpath,param.testIndx(n));
+%     annoAll = annoMulti({movieParam},param.annopath,param.annotype,param.timeStep);
+%     anno.new{n} = annoAll(annoAll~=0);
+%     [svm_stats.acr_all.new(n),svm_stats.prc.new{n},svm_stats.rec.new{n},...
+%         svm_stats.acr.new{n},cmat.new{n}] = precisionrecall(pred.new{n},anno.new{n},numClass);
+% end
+
 svm_stats.acr_all.train_soft = sum(anno.train==pred.train_soft(:,1)|...
     anno.train==pred.train_soft(:,2)|anno.train==pred.train_soft(:,3))/length(anno.train);
 svm_stats.acr_all.test_soft = sum(anno.test==pred.test_soft(:,1)|...
@@ -348,7 +364,13 @@ sp = cell2mat(pred.new_soft');
 an = cell2mat(anno.new');
 svm_stats.acr_all.new_all_soft = sum(an==sp(:,1)|an==sp(:,2)|an==sp(:,3))/length(an);
 
+
+% save results
+save([param.svmpath 'annotype' num2str(param.annotype) '_stats.mat'],'svm_stats','cmat','-v7.3');
+
 %% plots
+load(param.wbmap);
+
 disp(svm_stats.acr_all);
 fprintf('Precision:\n');
 disp(table(svm_stats.prc.train,svm_stats.prc.test,svm_stats.prc.new_all,...
@@ -361,9 +383,8 @@ disp(table(svm_stats.acr.train,svm_stats.acr.test,svm_stats.acr.new_all,...
     'variablenames',{'train','test','new'}));
 
 % plot confusion matrix
-load(param.wbmap);
 num_plts = max([length(param.testIndx),3]);
-figure;set(gcf,'color','w')
+figure;set(gcf,'color','w','position',[2055 500 821 578])
 subplot(2,num_plts,1)
 plotcmat(cmat.train,wbmap);title('Train');colorbar off
 % gcapos = get(gca,'position');colorbar off; set(gca,'position',gcapos);
@@ -381,7 +402,7 @@ end
 set(findall(gcf,'-property','FontSize'),'FontSize',9)
 
 % ROC curve
-figure;set(gcf,'color','w')
+figure;set(gcf,'color','w','position',[2079 168 792 236])
 subplot(1,3,1)
 auc.train = plotROCmultic(anno.train,pred_score.train,numClass);
 legend('off')
@@ -391,60 +412,12 @@ legend('off')
 subplot(1,3,3)
 auc.new = plotROCmultic(cell2mat(anno.new'),cell2mat(pred_score.new'),numClass);
 
-% save results
-save([param.svmpath 'annotype' num2str(param.annotype) '_stats.mat'],'svm_stats','cmat','-v7.3');
-
 %% plot ethogram
 figure; set(gcf,'color','w')
 for n = 1:length(param.testIndx)
     subplot(length(param.testIndx),1,n); hold on
     plotEthogram(pred.new{n},param.annotype);
 end
-
-%% somersaulting
-% read annotation
-fileind = 20;
-annoType = 5;
-timeStep = 25;
-movieParam = paramAll(fileind);
-annoPath = 'C:\Shuting\Data\freely_moving\individual_samples\annotations\';
-annoRaw = annoMulti({movieParam},annoPath,timeStep,0);
-annoAll = mergeAnno(annoRaw,4); % this scheme has a detaild ss description
-
-% take out time window
-sstw = floor(900/timeStep):floor(2100/timeStep); % file 20
-%sstw = floor(2000/timeStep):floor(4562/timeStep); % file 21
-%sstw = floor(1500/timeStep):floor(end/timeStep); % file 22
-sspredict = softPrediction(sstw,:);
-
-% make sentence
-sspredict_word = cell(size(sspredict));
-for i = 1:size(sspredict,1)
-    for j = 1:size(sspredict,2)
-        if ~isnan(sspredict(i,j))
-            sspredict_word{i,j} = annoInfo(annoType,sspredict(i,j));
-        end
-    end
-end
-
-% print sentence
-for i = 1:size(sspredict,1)
-    fprintf('%s',sspredict_word{i,1});
-    for j = 2:size(sspredict,2)
-        if ~isnan(sspredict(i,j))
-            fprintf('/%s',sspredict_word{i,j});
-        end
-    end
-    if i~=size(sspredict,1)
-        fprintf(' -> \n');
-    else
-        fprintf('\n');
-    end
-end
-
-
-% visualize
-makeAnnotatedMovie(sstw,sspredict,annoType,movieParam,timeStep,0.1,1);
 
 %% embedding
 fparam = struct();

@@ -1,7 +1,5 @@
 function [segAll,theta,centroid,a,b] = runBPSegmentation(movieParam)
 
-fprintf('processing %s...\n',movieParam.fileName);
-
 % initialize
 segAll = zeros([movieParam.imageSize,movieParam.numImages],'uint8');
 theta = zeros(movieParam.numImages,1);

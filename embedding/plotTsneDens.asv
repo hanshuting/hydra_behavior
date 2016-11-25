@@ -14,8 +14,8 @@ imagesc(xx,xx,im);
 colormap([[1 1 1];jet(63)]);
 pos = get(gca,'position');
 shading flat
-axis equal tight xy
-caxis([min(im(:)) cmax])
+axis equal tight off xy
+caxis([min( cmax])
 colorbar
 set(gca,'position',pos)
 

@@ -1250,111 +1250,43 @@ switch indx
     case 637
         fileName = '20161103_light-1';
         numImages = 32716;
-        fr = 5;
+        fr = 10;
         sz = [177,177];
     case 638
         fileName = '20161103_light-2';
         numImages = 32716;
-        fr = 5;
+        fr = 10;
         sz = [182,182];
     case 639
         fileName = '20161103_light-3';
         numImages = 32716;
-        fr = 5;
+        fr = 10;
         sz = [164,164];
     case 640
         fileName = '20161103_light-4';
         numImages = 32716;
-        fr = 5;
+        fr = 10;
         sz = [243,243];
     case 641
         fileName = '20161103_light-5';
         numImages = 32716;
-        fr = 5;
+        fr = 10;
         sz = [198,198];
     case 642
         fileName = '20161103_light-6';
         numImages = 32716;
-        fr = 5;
+        fr = 10;
         sz = [166,166];
     case 643
         fileName = '20161103_light-7';
         numImages = 32716;
-        fr = 5;
+        fr = 10;
         sz = [179,179];
     case 644
         fileName = '20161103_light-8';
         numImages = 24211;
-        fr = 5;
+        fr = 10;
         sz = [173,173];
-    % dataset 3
-    % dark
-    case 645
-        fileName = '20161107_dark-1';
-        numImages = 32716;
-        fr = 5;
-        sz = [187,187];
-    case 646
-        fileName = '20161107_dark-2';
-        numImages = 32716;
-        fr = 5;
-        sz = [168,168];
-    case 647
-        fileName = '20161107_dark-3';
-        numImages = 32716;
-        fr = 5;
-        sz = [157,157];
-    case 648
-        fileName = '20161107_dark-4';
-        numImages = 32716;
-        fr = 5;
-        sz = [173,173];
-    case 649
-        fileName = '20161107_dark-5';
-        numImages = 32716;
-        fr = 5;
-        sz = [155,155];
-    case 650
-        fileName = '20161107_dark-6';
-        numImages = 32716;
-        fr = 5;
-        sz = [157,157];
-    case 651
-        fileName = '20161107_dark-7';
-        numImages = 32716;
-        fr = 5;
-        sz = [181,181];
-    case 652
-        fileName = '20161107_dark-8';
-        numImages = 19899;
-        fr = 5;
-        sz = [171,171];
-    % light
-    case 653
-        fileName = '20161108_light-1';
-        numImages = 32716;
-        fr = 5;
-        sz = [190,190];
-    case 654
-        fileName = '20161108_light-2';
-        numImages = 32716;
-        fr = 5;
-        sz = [200,200];
-    case 655
-        fileName = '20161108_light-3';
-        numImages = 32716;
-        fr = 5;
-        sz = [184,184];
-    case 656
-        fileName = '20161108_light-4';
-        numImages = 32716;
-        fr = 5;
-        sz = [195,195];
-    case 657
-        fileName = '20161108_light-5';
-        numImages = 28197;
-        fr = 5;
-        sz = [191,191];
     % ---------------- day/night dataset --------------- %
     case 1001
         fileName = 'Day1-1';
