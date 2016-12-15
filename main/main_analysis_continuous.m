@@ -16,7 +16,7 @@ param.fileIndx = [1:5,7:11,13:28,30:56];
 param.trainIndx = [1:5,7:11,13:24,26:28,30:32,34:54,56];
 param.testIndx = [25,33,55];
 
-param.datastr = '20161019';
+param.datastr = '20161128';
 
 param.dpathbase = '/home/sh3276/work/data';
 param.pbase = '/home/sh3276/work/results';
@@ -37,12 +37,11 @@ param.wbmap = '/home/sh3276/work/results/wbmap.mat';
 % segmentation/registration parameters
 param.seg.numRegion = 3;
 param.seg.skipStep = 1;
-param.seg.outputsz = [300,300];
+param.seg.outputsz = [200,200];
 param.seg.ifscale = 1;
 
 % DT parameters
-% release_v4: with visualization; release_novis: no visualization
-param.dt.src = '/home/sh3276/software/dense_trajectory_release_v1.2/release_novis';
+param.dt.src = '/home/sh3276/software/dense_trajectory_release_v1.2/release_v4';
 param.dt.W = 5;
 param.dt.L = 15;
 param.dt.tlen = 5; % in seconds
@@ -51,9 +50,10 @@ param.dt.t = 1;
 param.dt.N = 32;
 param.dt.thresh = 0.5;
 
+param.timeStep = param.dt.tlen*param.fr;
+
 param.annotype = 5;
 param.fr = 5;
-param.timeStep = param.dt.tlen*param.fr;
 param.infostr = sprintf('L_%u_W_%u_N_%u_s_%u_t_%u_step_%u',param.dt.L,...
     param.dt.W,param.dt.N,param.dt.s,param.dt.t,param.timeStep);
 
@@ -74,7 +74,7 @@ param.svm.probest = 1; % true
 param.svm.name = [param.infostr '_drFVall_annoType' num2str(param.annotype)];
 
 % embedding parameters
-param.tsne.distType = 'euc';
+param.tsne.distType = 'corr';
 param.tsne.closeMatPool = true;
 param.tsne.perplexity = 16;
 param.tsne.training_perplexity = 16;
@@ -142,11 +142,10 @@ for n = 1:numfile
     
     % registration and make scaled video clips
     load([param.segpath movieParam.fileName '_seg.mat']);
-    regSeg = registerSegmentMask(segAll,theta,centroid,param.timeStep*param.seg.skipStep);
-    segmat = makeRegisteredVideo(param.fileIndx(n),regSeg,param.timeStep,param.seg.skipStep,...
+    regSeg = registerSegmentMask(segAll,theta,centroid,1);
+    segmat = makeRegisteredVideoCont(param.fileIndx(n),regSeg,param.timeStep,...
         param.dpath,param.segpath,param.segvidpath,param.seg.ifscale,param.seg.outputsz);
-    save([param.segpath movieParam.fileName '_scaled_reg_seg_step_' ...
-        num2str(param.timeStep) '.mat'],'segmat','-v7.3');
+    save([param.segpath movieParam.fileName '_scaled_reg_seg_cont.mat'],'segmat','-v7.3');
     
 end
 
@@ -168,9 +167,8 @@ for i = 1:length(param.fileIndx)
     % load features
     movieParam = paramAll(param.dpath,param.fileIndx(i));
     fprintf('extracting features %s...\n',movieParam.fileName);
-    load([param.segpath movieParam.fileName '_scaled_reg_seg_step_'...
-        num2str(param.timeStep) '.mat']);
-    [trajAll,hofAll,hogAll,mbhxAll,mbhyAll,coordAll] = extractRegionTwDT...
+    load([param.segpath movieParam.fileName '_scaled_reg_seg_cont.mat']);
+    [trajAll,hofAll,hogAll,mbhxAll,mbhyAll,coordAll] = extractRegionTwDTCont...
         (movieParam,param.dtpath,segmat,param.seg.numRegion,param.dt);
 
     % save features
@@ -244,15 +242,14 @@ end
 %% generate SVM samples
 % training data
 sample = load([param.fvpath param.infostr '_drFVall.mat']);
-acm = sample.acm;
 sample = sample.drFVall;
 
 % load annotations
 movieParamMulti = paramMulti(param.dpath,param.trainIndx);
 for n = 1:length(param.trainIndx)
-    movieParamMulti{n}.numImages = (acm(n+1)-acm(n))*param.timeStep;
+    movieParamMulti{n}.numImages = movieParamMulti{n}.numImages-param.timeStep;
 end
-annoAll = annoMulti(movieParamMulti,param.annopath,param.annotype,param.timeStep);
+annoAll = annoMulti(movieParamMulti,param.annopath,param.annotype,1);
 
 % write data
 param.svm.name = [param.infostr '_drFVall_annoType' num2str(param.annotype)];
@@ -262,9 +259,10 @@ wei_str = mkLibSVMsample(sample,param.svm.percTrain,annoAll,param.svm.name,param
 for n = 1:length(param.testIndx)
     
     movieParam = paramAll(param.dpath,param.testIndx(n));
+    movieParam.numImages = movieParam.numImages-param.timeStep;
     sample = load([param.fvpath movieParam.fileName '_' param.infostr '_drFVall.mat']);
     sample = sample.drFVall;
-    annoAll = annoMulti({movieParam},param.annopath,param.annotype,param.timeStep);
+    annoAll = annoMulti({movieParam},param.annopath,param.annotype,1);
     keepIndx = annoAll~=0;
 
     % write to libsvm format file
@@ -433,74 +431,11 @@ fparam.annopath = param.annopath;
 fparam.timeStep = 25;
 fparam.K = param.fv.K;
 
-param.tsne.fs_meth = 'llcfs';
 
-% runFVtsne(fparam,param.tsne);
-runFVtsneFS(fparam,param.tsne);
+runFVtsne(fparam,param.tsne);
 
-%% svm with feature selection
-load([param.svmpath param.svm.name '_svm_data.mat']);
 
-% feature selection
-ranking = feat_selection(sample,label,'ECFS');
-fsIndx = ranking(1:100);
 
-% write data
-param.svm.fsname = [param.infostr '_drFVall_annoType' num2str(param.annotype) '_fs'];
-wei_str = mkLibSVMsample(sample(:,fsIndx),param.svm.percTrain,label,param.svm.fsname,param.svmpath);
 
-% test sample
-for n = 1:length(param.testIndx)
-    
-    movieParam = paramAll(param.dpath,param.testIndx(n));
-    sample = load([param.fvpath movieParam.fileName '_' param.infostr '_drFVall.mat']);
-    sample = sample.drFVall(:,fsIndx);
-    annoAll = annoMulti({movieParam},param.annopath,param.annotype,param.timeStep);
-    keepIndx = annoAll~=0;
 
-    % write to libsvm format file
-    gnLibsvmFile(annoAll(keepIndx),sample(keepIndx,:),[param.svmpath ...
-        param.svm.fsname '_' movieParam.fileName '.txt']);
-
-end
-
-% train SVM
-writeSVMscript(param.svm,wei_str,param.svmpath,param.svm.fsname);
-try 
-    system(sprintf('chmod +x %srunSVM.sh',param.svmpath));
-    status = system(sprintf('bash %srunSVM.sh',param.svmpath));
-catch ME
-    error('Error running libSVM');
-end
-
-% predict test samples
-testnames = '';
-for n = 1:length(param.testIndx)
-    testnames = [testnames sprintf('"%s" ',fileinfo(param.testIndx(n)))];
-end
-testnames = testnames(1:end-1);
-writeSVMTestScript(param.svm.src,param.svmpath,param.svmpath,param.svm.fsname,testnames);
-try 
-    status = system(sprintf('bash %ssvmClassifyIndv.sh',param.svmpath));
-catch ME
-    error('Error running svm classification');
-end
-
-% save prediction result to mat files
-pred = struct();
-pred_score = struct();
-anno.train = label(indxTrain);
-anno.test = label(indxTest);
-[pred.train,pred_score.train,pred.train_soft] = saveSVMpred(param.svmpath,[param.svm.name '_train']);
-[pred.test,pred_score.test,pred.test_soft] = saveSVMpred(param.svmpath,[param.svm.name '_test']);
-for n = 1:length(param.testIndx)
-    movieParam = paramAll(param.dpath,param.testIndx(n));
-    annoAll = annoMulti({movieParam},param.annopath,param.annotype,param.timeStep);
-    anno.new{n} = annoAll(annoAll~=0);
-    [pred.new{n},pred_score.new{n},pred.new_soft{n}] = saveSVMpred(param.svmpath,...
-        [param.svm.name '_' fileinfo(param.testIndx(n))]);
-end
-
-save([param.svmpath 'annotype' num2str(param.annotype) '_mat_fsresults.mat'],...
-    'pred','pred_score','anno','-v7.3');
 

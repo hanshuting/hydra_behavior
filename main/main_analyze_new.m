@@ -11,11 +11,11 @@ addpath(genpath('/home/sh3276/software/inria_fisher_v1/yael_v371/matlab'));
 param = struct();
 
 % file information
-% param.fileIndx = 645:657;
+param.fileIndx = 718:747;
 % param.fileIndx = [502,504,506]; % for ss
-param.fileIndx = [304,328]; % for ss
+% param.fileIndx = [304,328]; % for ss
 
-param.datastr = '20161121';
+param.datastr = '20161215';
 param.mstr = '20161019';
 
 param.pbase = '/home/sh3276/work/results/dark_light';
@@ -37,7 +37,7 @@ param.seg.outputsz = [300,300];
 param.seg.ifscale = 1;
 
 % DT parameters
-param.dt.src = '/home/sh3276/software/dense_trajectory_release_v1.2/release_v4';
+param.dt.src = '/home/sh3276/software/dense_trajectory_release_v1.2/release_novis';
 param.dt.W = 5;
 param.dt.L = 15;
 param.dt.tlen = 5; % in seconds

@@ -1,4 +1,5 @@
 function [] = plotRegionLabel(xx,seg_im,im_mask)
+% plotRegionLabel(xx,seg_im,im_mask)
 % plot segmentation regions with labels
 
 numPoints = length(xx);

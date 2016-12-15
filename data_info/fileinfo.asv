@@ -1250,43 +1250,622 @@ switch indx
     case 637
         fileName = '20161103_light-1';
         numImages = 32716;
-        fr = 10;
+        fr = 5;
         sz = [177,177];
     case 638
         fileName = '20161103_light-2';
         numImages = 32716;
-        fr = 10;
+        fr = 5;
         sz = [182,182];
     case 639
         fileName = '20161103_light-3';
         numImages = 32716;
-        fr = 10;
+        fr = 5;
         sz = [164,164];
     case 640
         fileName = '20161103_light-4';
         numImages = 32716;
-        fr = 10;
+        fr = 5;
         sz = [243,243];
     case 641
         fileName = '20161103_light-5';
         numImages = 32716;
-        fr = 10;
+        fr = 5;
         sz = [198,198];
     case 642
         fileName = '20161103_light-6';
         numImages = 32716;
-        fr = 10;
+        fr = 5;
         sz = [166,166];
     case 643
         fileName = '20161103_light-7';
         numImages = 32716;
-        fr = 10;
+        fr = 5;
         sz = [179,179];
     case 644
         fileName = '20161103_light-8';
         numImages = 24211;
-        fr = 10;
+        fr = 5;
         sz = [173,173];
+    % dataset 3
+    % dark
+    case 645
+        fileName = '20161107_dark-1';
+        numImages = 32716;
+        fr = 5;
+        sz = [187,187];
+    case 646
+        fileName = '20161107_dark-2';
+        numImages = 32716;
+        fr = 5;
+        sz = [168,168];
+    case 647
+        fileName = '20161107_dark-3';
+        numImages = 32716;
+        fr = 5;
+        sz = [157,157];
+    case 648
+        fileName = '20161107_dark-4';
+        numImages = 32716;
+        fr = 5;
+        sz = [173,173];
+    case 649
+        fileName = '20161107_dark-5';
+        numImages = 32716;
+        fr = 5;
+        sz = [155,155];
+    case 650
+        fileName = '20161107_dark-6';
+        numImages = 32716;
+        fr = 5;
+        sz = [157,157];
+    case 651
+        fileName = '20161107_dark-7';
+        numImages = 32716;
+        fr = 5;
+        sz = [181,181];
+    case 652
+        fileName = '20161107_dark-8';
+        numImages = 19899;
+        fr = 5;
+        sz = [171,171];
+    % light
+    case 653
+        fileName = '20161108_light-1';
+        numImages = 32716;
+        fr = 5;
+        sz = [190,190];
+    case 654
+        fileName = '20161108_light-2';
+        numImages = 32716;
+        fr = 5;
+        sz = [200,200];
+    case 655
+        fileName = '20161108_light-3';
+        numImages = 32716;
+        fr = 5;
+        sz = [184,184];
+    case 656
+        fileName = '20161108_light-4';
+        numImages = 32716;
+        fr = 5;
+        sz = [195,195];
+    case 657
+        fileName = '20161108_light-5';
+        numImages = 28197;
+        fr = 5;
+        sz = [191,191];
+    case 658
+        fileName = '20161121_light-1';
+        numImages = 32716;
+        fr = 5;
+        sz = [260,257];
+    case 659
+        fileName = '20161121_light-2';
+        numImages = 16900;
+        fr = 5;
+        sz = [201,197];
+    case 660
+        fileName = '20161121_light-3';
+        numImages = 15816;
+        fr = 5;
+        sz = [195,196];
+    case 661
+        fileName = '20161121_light-4';
+        numImages = 32716;
+        fr = 5;
+        sz = [134,134];
+    case 662
+        fileName = '20161121_light-5';
+        numImages = 32716;
+        fr = 5;
+        sz = [121,121];
+    case 663
+        fileName = '20161121_light-6';
+        numImages = 32716;
+        fr = 5;
+        sz = [126,127];
+    case 664
+        fileName = '20161121_light-7';
+        numImages = 32716;
+        fr = 5;
+        sz = [145,152];
+    case 665
+        fileName = '20161121_light-8';
+        numImages = 32716;
+        fr = 5;
+        sz = [161,169];
+    case 666
+        fileName = '20161121_light-9';
+        numImages = 14600;
+        fr = 5;
+        sz = [124,128];
+    case 667
+        fileName = '20161122_dark-1';
+        numImages = 32716;
+        fr = 5;
+        sz = [310,310];
+    case 668
+        fileName = '20161122_dark-2';
+        numImages = 32716;
+        fr = 5;
+        sz = [270,270];
+    case 669
+        fileName = '20161122_dark-3';
+        numImages = 32716;
+        fr = 5;
+        sz = [199,199];
+    case 670
+        fileName = '20161122_dark-4';
+        numImages = 32716;
+        fr = 5;
+        sz = [260,260];
+    case 671
+        fileName = '20161122_dark-5';
+        numImages = 32716;
+        fr = 5;
+        sz = [250,250];
+    case 672
+        fileName = '20161122_dark-6';
+        numImages = 32716;
+        fr = 5;
+        sz = [256,256];
+    case 673
+        fileName = '20161129_light-1';
+        numImages = 32716;
+        fr = 5;
+        sz = [229,229];
+    case 674
+        fileName = '20161129_light-2';
+        numImages = 32716;
+        fr = 5;
+        sz = [163,163];
+    case 675
+        fileName = '20161129_light-3';
+        numImages = 32716;
+        fr = 5;
+        sz = [177,177];
+    case 676
+        fileName = '20161129_light-4';
+        numImages = 32716;
+        fr = 5;
+        sz = [260,292];
+    case 677
+        fileName = '20161129_light-5';
+        numImages = 32716;
+        fr = 5;
+        sz = [152,151];
+    case 678
+        fileName = '20161129_light-6';
+        numImages = 32716;
+        fr = 5;
+        sz = [208,208];
+    case 679
+        fileName = '20161129_light-7';
+        numImages = 40404;
+        fr = 5;
+        sz = [212,212];
+    case 680
+        fileName = '20161130_dark-1';
+        numImages = 32716;
+        fr = 5;
+        sz = [253,253];
+    case 681
+        fileName = '20161130_dark-2';
+        numImages = 32716;
+        fr = 5;
+        sz = [212,212];
+    case 682
+        fileName = '20161130_dark-3';
+        numImages = 32716;
+        fr = 5;
+        sz = [245,245];
+    case 683
+        fileName = '20161130_dark-4';
+        numImages = 32716;
+        fr = 5;
+        sz = [221,221];
+    case 684
+        fileName = '20161130_dark-5';
+        numImages = 32716;
+        fr = 5;
+        sz = [222,260];
+    case 685
+        fileName = '20161130_dark-6';
+        numImages = 32716;
+        fr = 5;
+        sz = [280,255];
+    case 686
+        fileName = '20161130_dark-7';
+        numImages = 31941;
+        fr = 5;
+        sz = [291,272];
+    case 687
+        fileName = '20161201_light-1';
+        numImages = 32716;
+        fr = 5;
+        sz = [194,194];
+    case 688
+        fileName = '20161201_light-2';
+        numImages = 32716;
+        fr = 5;
+        sz = [155,155];
+    case 689
+        fileName = '20161201_light-3';
+        numImages = 32716;
+        fr = 5;
+        sz = [172,172];
+    case 690
+        fileName = '20161201_light-4';
+        numImages = 32716;
+        fr = 5;
+        sz = [183,183];
+    case 691
+        fileName = '20161201_light-5';
+        numImages = 32716;
+        fr = 5;
+        sz = [269,269];
+    case 692
+        fileName = '20161201_light-6';
+        numImages = 32716;
+        fr = 5;
+        sz = [246,246];
+    case 693
+        fileName = '20161201_light-7';
+        numImages = 32716;
+        fr = 5;
+        sz = [226,226];
+    case 694
+        fileName = '20161201_light-8';
+        numImages = 21454;
+        fr = 5;
+        sz = [219,219];
+    case 695
+        fileName = '20161202_dark-1';
+        numImages = 32716;
+        fr = 5;
+        sz = [151,151];
+    case 696
+        fileName = '20161202_dark-2';
+        numImages = 32716;
+        fr = 5;
+        sz = [202,202];
+    case 697
+        fileName = '20161202_dark-3';
+        numImages = 32716;
+        fr = 5;
+        sz = [202,202];
+    case 698
+        fileName = '20161202_dark-4';
+        numImages = 32716;
+        fr = 5;
+        sz = [182,182];
+    case 699
+        fileName = '20161202_dark-5';
+        numImages = 32716;
+        fr = 5;
+        sz = [217,217];
+    case 700
+        fileName = '20161202_dark-6';
+        numImages = 32716;
+        fr = 5;
+        sz = [207,207];
+    case 701
+        fileName = '20161202_dark-7';
+        numImages = 32716;
+        fr = 5;
+        sz = [206,206];
+    case 702
+        fileName = '20161202_dark-8';
+        numImages = 28401;
+        fr = 5;
+        sz = [225,225];
+    case 703
+        fileName = '20161207_light-1';
+        numImages = 32716;
+        fr = 5;
+        sz = [279,312];
+    case 704
+        fileName = '20161207_light-2';
+        numImages = 32716;
+        fr = 5;
+        sz = [310,331];
+    case 705
+        fileName = '20161207_light-3';
+        numImages = 32716;
+        fr = 5;
+        sz = [282,284];
+    case 706
+        fileName = '20161207_light-4';
+        numImages = 32716;
+        fr = 5;
+        sz = [360,335];
+    case 707
+        fileName = '20161207_light-5';
+        numImages = 32716;
+        fr = 5;
+        sz = [200,200];
+    case 708
+        fileName = '20161207_light-6';
+        numImages = 32716;
+        fr = 5;
+        sz = [236,236];
+    case 709
+        fileName = '20161207_light-7';
+        numImages = 31500;
+        fr = 5;
+        sz = [315,315];
+    case 710
+        fileName = '20161208_dark-1';
+        numImages = 32716;
+        fr = 5;
+        sz = [304,304];
+    case 711
+        fileName = '20161208_dark-2';
+        numImages = 32716;
+        fr = 5;
+        sz = [239,239];
+    case 712
+        fileName = '20161208_dark-3';
+        numImages = 32716;
+        fr = 5;
+        sz = [224,224];
+    case 713
+        fileName = '20161208_dark-4';
+        numImages = 32716;
+        fr = 5;
+        sz = [236,236];
+    case 714
+        fileName = '20161208_dark-5';
+        numImages = 32716;
+        fr = 5;
+        sz = [225,225];
+    case 715
+        fileName = '20161208_dark-6';
+        numImages = 32716;
+        fr = 5;
+        sz = [271,271];
+    case 716
+        fileName = '20161208_dark-7';
+        numImages = 32716;
+        fr = 5;
+        sz = [247,247];
+    case 717
+        fileName = '20161208_dark-8';
+        numImages = 20523;
+        fr = 5;
+        sz = [261,261];
+    % short dark/light datasets
+    case 718
+	fileName = '20160105_1_dark';
+	numImages = 12029;
+	fr = 5;
+	sz = [234,234];
+case 719
+	fileName = '20160105_1_light';
+	numImages = 11236;
+	fr = 5;
+	sz = [301,301];
+case 720
+	fileName = '20160105_2_dark';
+	numImages = 10610;
+	fr = 5;
+	sz = [322,322];
+case 721
+	fileName = '20160105_2_light';
+	numImages = 11153;
+	fr = 5;
+	sz = [333,333];
+case 722
+	fileName = '20160105_3_dark';
+	numImages = 10098;
+	fr = 5;
+	sz = [392,392];
+case 723
+	fileName = '20160105_3_light';
+	numImages = 11121;
+	fr = 5;
+	sz = [369,369];
+case 724
+	fileName = '20160106_1_dark';
+	numImages = 9260;
+	fr = 5;
+	sz = [308,308];
+case 725
+	fileName = '20160106_1_light';
+	numImages = 9460;
+	fr = 5;
+	sz = [251,251];
+case 726
+	fileName = '20160106_2_dark';
+	numImages = 8010;
+	fr = 5;
+	sz = [246,246];
+case 727
+	fileName = '20160106_2_light';
+	numImages = 10884;
+	fr = 5;
+	sz = [287,287];
+case 728
+	fileName = '20160106_3_dark';
+	numImages = 8505;
+	fr = 5;
+	sz = [329,329];
+case 729
+	fileName = '20160106_3_light';
+	numImages = 11129;
+	fr = 5;
+	sz = [409,409];
+case 730
+	fileName = '20160108_1_dark';
+	numImages = 9050;
+	fr = 5;
+	sz = [173,173];
+case 731
+	fileName = '20160108_1_dark_float';
+	numImages = 11681;
+	fr = 5;
+	sz = [186,186];
+case 732
+	fileName = '20160108_1_light';
+	numImages = 11933;
+	fr = 5;
+	sz = [219,219];
+case 733
+	fileName = '20160108_2_dark';
+	numImages = 9428;
+	fr = 5;
+	sz = [279,279];
+case 734
+	fileName = '20160108_2_dark_float';
+	numImages = 17461;
+	fr = 5;
+	sz = [239,239];
+case 735
+	fileName = '20160108_2_light';
+	numImages = 9602;
+	fr = 5;
+	sz = [386,386];
+case 736
+	fileName = '20160112_1_dark';
+	numImages = 9548;
+	fr = 5;
+	sz = [300,300];
+case 737
+	fileName = '20160112_1_light';
+	numImages = 6171;
+	fr = 5;
+	sz = [342,342];
+case 738
+	fileName = '20160112_2_dark';
+	numImages = 8402;
+	fr = 5;
+	sz = [299,299];
+case 739
+	fileName = '20160112_2_light';
+	numImages = 8656;
+	fr = 5;
+	sz = [279,279];
+case 740
+	fileName = '20160112_3_dark';
+	numImages = 8224;
+	fr = 5;
+	sz = [323,323];
+case 741
+	fileName = '20160112_3_light';
+	numImages = 7602;
+	fr = 5;
+	sz = [417,417];
+case 742
+	fileName = '20160113_1_dark';
+	numImages = 10470;
+	fr = 5;
+	sz = [214,214];
+case 743
+	fileName = '20160113_1_light';
+	numImages = 9019;
+	fr = 5;
+	sz = [216,216];
+case 744
+	fileName = '20160113_2_dark';
+	numImages = 8567;
+	fr = 5;
+	sz = [239,239];
+case 745
+	fileName = '20160113_2_light';
+	numImages = 12904;
+	fr = 5;
+	sz = [200,200];
+case 746
+	fileName = '20160113_3_dark';
+	numImages = 8726;
+	fr = 5;
+	sz = [294,294];
+case 747
+	fileName = '20160113_3_light';
+	numImages = 9944;
+	fr = 5;
+	sz = [313,313];
+case 748
+	fileName = '20161008_1_dark';
+	numImages = 11031;
+	fr = 5;
+	sz = [172,162];
+case 749
+	fileName = '20161008_1_light';
+	numImages = 10331;
+	fr = 5;
+	sz = [188,182];
+case 750
+	fileName = '20161008_2_dark';
+	numImages = 11230;
+	fr = 5;
+	sz = [306,207];
+case 751
+	fileName = '20161008_2_light';
+	numImages = 7100;
+	fr = 5;
+	sz = [256,256];
+case 752
+	fileName = '20161010_1_dark';
+	numImages = 9610;
+	fr = 5;
+	sz = [317,320];
+case 753
+	fileName = '20161010_1_light';
+	numImages = 10883;
+	fr = 5;
+	sz = [277,288];
+case 754
+	fileName = '20161010_2_dark';
+	numImages = 9586;
+	fr = 5;
+	sz = [285,276];
+case 755
+	fileName = '20161010_2_light';
+	numImages = 12560;
+	fr = 5;
+	sz = [238,351];
+case 756
+	fileName = '20161014_1_dark';
+	numImages = 10198;
+	fr = 5;
+	sz = [286,303];
+case 757
+	fileName = '20161014_1_light';
+	numImages = 10203;
+	fr = 5;
+	sz = [251,254];
+case 758
+	fileName = '20161014_2_dark';
+	numImages = 12012;
+	fr = 5;
+	sz = [287,304];
+case 759
+	fileName = '20161014_2_light';
+	numImages = 9678;
+	fr = 5;
+	sz = [376,386];
     % ---------------- day/night dataset --------------- %
     case 1001
         fileName = 'Day1-1';

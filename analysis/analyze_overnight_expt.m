@@ -1,8 +1,8 @@
 
-findx = {(621:628)',(613:620)'};
-fstr = {'dark','light'};
-dpath = {'C:\Shuting\Projects\hydra behavior\results\long_recording\svm\20161026\',...
-    'C:\Shuting\Projects\hydra behavior\results\long_recording\svm\20161024\'};
+% findx = {(621:628)',(613:620)'};
+% fstr = {'dark','light'};
+% dpath = {'C:\Shuting\Projects\hydra behavior\results\long_recording\svm\20161026\',...
+%     'C:\Shuting\Projects\hydra behavior\results\long_recording\svm\20161024\'};
 
 % findx = {(629:636)',(637:644)'};
 % fstr = {'dark','light'};
@@ -14,6 +14,21 @@ dpath = {'C:\Shuting\Projects\hydra behavior\results\long_recording\svm\20161026
 % dpath = {'C:\Shuting\Projects\hydra behavior\results\long_recording\svm\20161110\',...
 %     'C:\Shuting\Projects\hydra behavior\results\long_recording\svm\20161110\'};
 
+% findx = {(673:679)',(680:686)'};
+% fstr = {'dark','light'};
+% dpath = {'C:\Shuting\Projects\hydra behavior\results\long_recording\svm\20161203\hydra1\',...
+%     'C:\Shuting\Projects\hydra behavior\results\long_recording\svm\20161203\hydra1\'};
+
+% findx = {(687:694)',(695:702)'};
+% fstr = {'dark','light'};
+% dpath = {'C:\Shuting\Projects\hydra behavior\results\long_recording\svm\20161203\hydra2\',...
+%     'C:\Shuting\Projects\hydra behavior\results\long_recording\svm\20161203\hydra2\'};
+
+findx = {(703:710)',(711:717)'};
+fstr = {'dark','light'};
+dpath = {'C:\Shuting\Projects\hydra behavior\results\long_recording\svm\20161211\',...
+    'C:\Shuting\Projects\hydra behavior\results\long_recording\svm\20161211\'};
+
 p = 0.05;
 annotype = 5;
 fr = 5;
@@ -22,15 +37,14 @@ timeStep = 25;
 %% process results
 [~,numClass] = annoInfo(annotype,1);
 
-hf = figure;
-set(gcf,'color','w','position',[1982 152 615 500])
+% hf = figure;
+% set(gcf,'color','w','position',[1982 152 615 500])
 
 for n = 1:length(findx)
     
     % load data
     num_file = length(findx{n});
     combined_data = [];
-    bhv_hist = zeros(num_file,numClass);
 
     for ii = 1:num_file
         movieParam = paramAll(dpath{n},findx{n}(ii));
@@ -47,9 +61,9 @@ for n = 1:length(findx)
     save([dpath{n} fstr{n} '_bhv_hist.mat'],'bhv_hist','combined_data','-v7.3')
 
     %% ethograms
-%     figure; set(gcf,'color','w')
-%     plotEthogram(combined_data',annotype);
-%     title(fstr{n});
+    figure; set(gcf,'color','w')
+    plotEthogram(combined_data',annotype);
+    title(fstr{n});
 %     saveas(gcf,[dpath{n} fstr{n} '_ethogram_annotype' num2str(annotype) '.fig'])
     
     %% instataneous frequency
@@ -109,7 +123,7 @@ for n = 1:length(findx)
 %     fr_th = eth_act_fr(2,:);
 %     fr_th(fr_th>=quantile(eth_act_fr(2,:),qnoise)) = NaN;
 %     th = 3*nanstd(fr_th(:))+nanmean(fr_th(:));
-    th = 0.7;
+    th = 0.5;
     nonact_prd = eth_act_fr(1,:)>th;
     
     subplot(m,1,5)
@@ -130,19 +144,19 @@ for n = 1:length(findx)
     save([dpath{n} fstr{n} '_act_bin.mat'],'nonact_prd','numT','-v7.3')
     
     %% plot power
-    [~,F1,~,P1] = spectrogram(eth_act_fr(1,:),hanning(512),256,1e-5:1e-4:2e-3,fr/timeStep);
-    [~,F2,T,P2] = spectrogram(eth_act_fr(2,:),hanning(512),256,1e-5:1e-4:2e-3,fr/timeStep);
-    
-    figure(hf);
-    subplot(2,2,(n-1)*2+1)
-    imagesc(T*timeStep/60/60,F1,10*log10(P1));
-    axis xy; xlabel('time (h)'); ylabel('Frequency (Hz)'); title([fstr{n} ' nonact']);
-    subplot(2,2,(n-1)*2+2)
-    imagesc(T*timeStep/60/60,F2,10*log10(P2));
-    axis xy; xlabel('time (h)'); ylabel('Frequency (Hz)'); title([fstr{n} ' act']);
-    
-    saveas(gcf,[dpath{n} 'spetrogram_' num2str(winsz) ...
-        'min_annotype' num2str(annotype) '.fig'])
+%     [~,F1,~,P1] = spectrogram(eth_act_fr(1,:),hanning(512),256,1e-5:1e-4:2e-3,fr/timeStep);
+%     [~,F2,T,P2] = spectrogram(eth_act_fr(2,:),hanning(512),256,1e-5:1e-4:2e-3,fr/timeStep);
+%     
+%     figure(hf);
+%     subplot(2,2,(n-1)*2+1)
+%     imagesc(T*timeStep/60/60,F1,10*log10(P1));
+%     axis xy; xlabel('time (h)'); ylabel('Frequency (Hz)'); title([fstr{n} ' nonact']);
+%     subplot(2,2,(n-1)*2+2)
+%     imagesc(T*timeStep/60/60,F2,10*log10(P2));
+%     axis xy; xlabel('time (h)'); ylabel('Frequency (Hz)'); title([fstr{n} ' act']);
+%     
+%     saveas(gcf,[dpath{n} 'spetrogram_' num2str(winsz) ...
+%         'min_annotype' num2str(annotype) '.fig'])
     
 end
 
@@ -170,7 +184,11 @@ fstr = {'dark','light'};
 dpathbase = 'C:\Shuting\Projects\hydra behavior\results\long_recording\svm\';
 dpath = {[dpathbase '20161026\'],[dpathbase '20161024\'];...
     [dpathbase '20161105\'],[dpathbase '20161105\'];...
-    [dpathbase '20161110\'],[dpathbase '20161110\'];};
+    [dpathbase '20161110\'],[dpathbase '20161110\'];...
+    [dpathbase '20161203\hydra1\'],[dpathbase '20161203\hydra1\'];...
+    [dpathbase '20161203\hydra2\'],[dpathbase '20161203\hydra2\'];...
+    [dpathbase '20161211\'],[dpathbase '20161211\']};
+dpath = {[dpathbase '20161211\'],[dpathbase '20161211\']};
 figpath = 'C:\Shuting\Projects\hydra behavior\results\long_recording\fig\';
 num_file = size(dpath,1);
 
@@ -185,10 +203,12 @@ for n = 1:num_file
     light_hist(n,:) = light.bhv_hist;
 end
 
+% plot settings
 gridsz = 0.2;
 wsz = 0.1;
 linew = 1;
 
+% plot
 figure;
 set(gcf,'color','w','position',[2003 555 733 326],'PaperPositionMode','auto')
 hold on;
@@ -201,7 +221,7 @@ for n = 1:numClass
         'color',0.7*[1 1 1],'linewidth',linew);
     plot(n-gridsz+[-wsz,wsz],mean(dark_hist(:,n))*[1 1],'color',0*[1 1 1],'linewidth',2*linew);
     plot(n+gridsz+[-wsz,wsz],mean(light_hist(:,n))*[1 1],'color',[0 0 1],'linewidth',2*linew);
-    [~,pval] = ttest(dark_hist(:,n),light_hist(:,n));
+    [~,pval] = ttest(dark_hist(:,n),light_hist(:,n)); % paired t test
     if pval<p
         scatter(n,1.5*max(bhv_hist(:,n)),20,'k*');
     end
@@ -235,11 +255,12 @@ for n = 1:num_file
     light_bin_len{n} = light_iv(:,2)-light_iv(:,1);
 end
 
-% plot
+% plot settings
 gridsz = 0.2;
 wsz = 0.1;
 linew = 1;
 
+% plot
 figure;
 set(gcf,'color','w','position',[1977 177 773 212],'PaperPositionMode','auto')
 subplot(1,3,1); hold on
@@ -268,7 +289,7 @@ plot(1-gridsz+[-wsz,wsz],mean(dvec)*[1 1],'color',0*[1 1 1],'linewidth',2*linew)
 plot(1+gridsz+[-wsz,wsz],mean(lvec)*[1 1],'color',[0 0 1],'linewidth',2*linew);
 [~,pval] = ttest2(dvec,lvec);
 if pval<p
-    scatter(1,1.2*max([dvec lvec]),20,'k*');
+    scatter(1,1.2*max([dvec;lvec]),20,'k*');
 end
 ylabel('Time (min)')
 

@@ -1,11 +1,20 @@
-function [auc] = plotROCmultic(labels,scores,numClass)
+function [auc,xx_out,yy_out] = plotROCmultic(labels,scores,numClass,cc,linew)
 % plot ROC class for multiclass classifiers on current axis handle; return
 % AUC vector
 
-% cc = jet(numClass+1);
-cc = jet(numClass);
+if nargin < 4
+    % cc = jet(numClass+1);
+    cc = jet(numClass);
+    cc = max(cc-0.3,0);
+end
+if nargin < 5
+    linew = 1;
+end
 
 auc = zeros(numClass,1);
+xx_out = [];
+yy_out = [];
+
 h = cell(numClass,1);
 hstr = '';
 lstr = '';
@@ -15,10 +24,12 @@ plot([0 1],[0 1],'--','color','k','linewidth',1);
 for n = 1:numClass
     if sum(labels==n)~=0
         [xx,yy,~,auc(n)] = perfcurve(labels,scores(:,n),n);
-        h{n} = plot(xx,yy,'color',cc(n,:),'linewidth',1);
+        h{n} = plot(xx,yy,'color',cc(n,:),'linewidth',linew);
         hstr = [hstr sprintf('h{%u}',n) ' '];
         lstr = [lstr '''' num2str(n) ''','];
 %     text(10,10,sprintf('AUC=%1.2f',auc(n)));
+        xx_out(end+1,:) = reshape(xx,1,[]);
+        yy_out(end+1,:) = reshape(yy,1,[]);
     end
 end
 set(gca,'linewidth',1)
