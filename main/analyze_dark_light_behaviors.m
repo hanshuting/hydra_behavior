@@ -8,7 +8,7 @@
 
 % findx = [718:723,736:741;724:729,742:747]'; % starved vs fed, both dark and light
 % findx = [718:2:723,736:2:741;724:2:729,742:2:747]'; % starved vs fed, dark only
-findx = [719:2:723,737:2:741;725:2:729,743:2:747]'; % starved vs fed, light only
+% findx = [719:2:723,737:2:741;725:2:729,743:2:747]'; % starved vs fed, light only
 
 dpath = 'C:\Shuting\Projects\hydra behavior\results\dark_light\svm\20161215\';
 p = 0.05;

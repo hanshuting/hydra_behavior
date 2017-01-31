@@ -8,11 +8,11 @@ ifsave = 0;
 [~,numClass] = annoInfo(annotype,1);
 
 % behavior types to plot
-btype = [4,5,6];
+btype = [2,5,6];
 
 % smoothing kernel size
 fr = 5; % frame rate
-winsz = 1; % 10, in min
+winsz = 0.5; % 10, in min
 sig = ceil(winsz*60*fr/timeStep);
 mu = 2*ceil(2*sig)+1;
 fgauss = fspecial('gaussian',[mu,1],sig);
@@ -105,11 +105,12 @@ for n = 1:length(fileIndx)
 end
 
 %% from dark/light experiment
-% dataset 1
+% 332, 330 are ss-like but failed attempts
 fileIndx = [304,310];%,328,332,330];
-sstw = {7150/timeStep:7700/timeStep,700/timeStep:1425/timeStep};
-ctrltw = {1:500/timeStep,2000/timeStep:2700/timeStep};
-dpath = 'C:\Shuting\Projects\hydra behavior\results\dark_light\svm\20161215\';
+sstw = {7150/timeStep:7700/timeStep,700/timeStep:1425/timeStep,3700/timeStep:4200/timeStep,5400/timeStep:5625/timeStep,...
+    4100/timeStep:4300/timeStep};
+ctrltw = {1:500/timeStep,2000/timeStep:2700/timeStep,1:500/timeStep,1:225/timeStep,1:200/timeStep};
+dpath = 'C:\Shuting\Projects\hydra behavior\results\dark_light\svm\20161015\';
 vpath = 'E:\Data\dark_light_behaviors\';
 
 for n = 1:length(fileIndx)
@@ -117,11 +118,10 @@ for n = 1:length(fileIndx)
         btype,hf,vpath,spath,timeStep,numClass,linew,cc,ifsave,ifvis)
 end
 
-% dataset 2: 332, 330 are ss-like but failed attempts
-fileIndx = [328,332,330];
-sstw = {3700/timeStep:4200/timeStep,5400/timeStep:5625/timeStep,...
+fileIndx = [304,310];%,328,332,330];
+sstw = {7150/timeStep:7700/timeStep,700/timeStep:1425/timeStep,3700/timeStep:4200/timeStep,5400/timeStep:5625/timeStep,...
     4100/timeStep:4300/timeStep};
-ctrltw = {1:500/timeStep,1:225/timeStep,1:200/timeStep};
+ctrltw = {1:500/timeStep,2000/timeStep:2700/timeStep,1:500/timeStep,1:225/timeStep,1:200/timeStep};
 dpath = 'C:\Shuting\Projects\hydra behavior\results\dark_light\svm\20161015\';
 vpath = 'E:\Data\dark_light_behaviors\';
 
@@ -144,7 +144,6 @@ end
 
 %% clean up figures
 figure(hf)
-set(gcf,'color','w')
 xlabel(annoInfo(annotype,btype(1)));
 ylabel(annoInfo(annotype,btype(2)));
 zlabel(annoInfo(annotype,btype(3)));

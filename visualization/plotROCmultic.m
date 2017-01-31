@@ -12,8 +12,8 @@ if nargin < 5
 end
 
 auc = zeros(numClass,1);
-xx_out = [];
-yy_out = [];
+% xx_out = [];
+% yy_out = [];
 
 h = cell(numClass,1);
 hstr = '';
@@ -28,8 +28,8 @@ for n = 1:numClass
         hstr = [hstr sprintf('h{%u}',n) ' '];
         lstr = [lstr '''' num2str(n) ''','];
 %     text(10,10,sprintf('AUC=%1.2f',auc(n)));
-        xx_out(end+1,:) = reshape(xx,1,[]);
-        yy_out(end+1,:) = reshape(yy,1,[]);
+%         xx_out(end+1,:) = reshape(xx,1,[]);
+%         yy_out(end+1,:) = reshape(yy,1,[]);
     end
 end
 set(gca,'linewidth',1)

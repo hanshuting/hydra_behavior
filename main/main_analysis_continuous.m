@@ -50,10 +50,10 @@ param.dt.t = 1;
 param.dt.N = 32;
 param.dt.thresh = 0.5;
 
+param.fr = 5;
 param.timeStep = param.dt.tlen*param.fr;
 
 param.annotype = 5;
-param.fr = 5;
 param.infostr = sprintf('L_%u_W_%u_N_%u_s_%u_t_%u_step_%u',param.dt.L,...
     param.dt.W,param.dt.N,param.dt.s,param.dt.t,param.timeStep);
 
@@ -304,10 +304,19 @@ anno.test = label(indxTest);
 [pred.test,pred_score.test,pred.test_soft] = saveSVMpred(param.svmpath,[param.svm.name '_test']);
 for n = 1:length(param.testIndx)
     movieParam = paramAll(param.dpath,param.testIndx(n));
-    annoAll = annoMulti({movieParam},param.annopath,param.annotype,param.timeStep);
+    movieParam.numImages = movieParam.numImages-param.timeStep;
+    annoAll = annoMulti({movieParam},param.annopath,param.annotype,1);
     anno.new{n} = annoAll(annoAll~=0);
     [pred.new{n},pred_score.new{n},pred.new_soft{n}] = saveSVMpred(param.svmpath,...
         [param.svm.name '_' fileinfo(param.testIndx(n))]);
+end
+
+% prediction with smoothing
+smooth_tw = 5;
+pred.train_smooth = smooth_prediction(pred.train,smooth_tw);
+pred.test_smooth = smooth_prediction(pred.test,smooth_tw);
+for n = 1:length(param.testIndx)
+    pred.new_smooth{n} = smooth_prediction(pred.new{n},smooth_tw);
 end
 
 save([param.svmpath 'annotype' num2str(param.annotype) '_mat_results.mat'],...
@@ -321,13 +330,15 @@ numClass = max(anno.train);
 svm_stats = struct();
 cmat = struct();
 
+% raw prediction
 [svm_stats.acr_all.train,svm_stats.prc.train,svm_stats.rec.train,...
     svm_stats.acr.train,cmat.train] = precisionrecall(pred.train,anno.train,numClass);
 [svm_stats.acr_all.test,svm_stats.prc.test,svm_stats.rec.test,...
     svm_stats.acr.test,cmat.test] = precisionrecall(pred.test,anno.test,numClass);
 for n = 1:length(param.testIndx)
     movieParam = paramAll(param.dpath,param.testIndx(n));
-    annoAll = annoMulti({movieParam},param.annopath,param.annotype,param.timeStep);
+    movieParam.numImages = movieParam.numImages-param.timeStep;
+    annoAll = annoMulti({movieParam},param.annopath,param.annotype,1);
     anno.new{n} = annoAll(annoAll~=0);
     [svm_stats.acr_all.new(n),svm_stats.prc.new{n},svm_stats.rec.new{n},...
         svm_stats.acr.new{n},cmat.new{n}] = precisionrecall(pred.new{n},anno.new{n},numClass);
@@ -336,6 +347,27 @@ end
 [svm_stats.acr_all.new_all,svm_stats.prc.new_all,svm_stats.rec.new_all,...
     svm_stats.acr.new_all,cmat.new_all] = precisionrecall...
     (cell2mat(pred.new'),cell2mat(anno.new'),numClass);
+
+% smooth prediction
+[svm_stats.acr_all.train_smooth,svm_stats.prc.train_smooth,svm_stats.rec.train_smooth,...
+    svm_stats.acr.train_smooth,cmat.train_smooth] = precisionrecall...
+    (pred.train_smooth,anno.train,numClass);
+[svm_stats.acr_all.test_smooth,svm_stats.prc.test_smooth,svm_stats.rec.test_smooth,...
+    svm_stats.acr.test_smooth,cmat.test_smooth] = precisionrecall...
+    (pred.test_smooth,anno.test,numClass);
+for n = 1:length(param.testIndx)
+    movieParam = paramAll(param.dpath,param.testIndx(n));
+    movieParam.numImages = movieParam.numImages-param.timeStep;
+    annoAll = annoMulti({movieParam},param.annopath,param.annotype,1);
+    anno.new{n} = annoAll(annoAll~=0);
+    [svm_stats.acr_all.new_smooth(n),svm_stats.prc.new_smooth{n},svm_stats.rec.new_smooth{n},...
+        svm_stats.acr.new_smooth{n},cmat.new_smooth{n}] = precisionrecall...
+        (pred.new_smooth{n},anno.new{n},numClass);
+end
+
+[svm_stats.acr_all.new_all_smooth,svm_stats.prc.new_all_smooth,svm_stats.rec.new_all_smooth,...
+    svm_stats.acr.new_all_smooth,cmat.new_all_smooth] = precisionrecall...
+    (cell2mat(pred.new_smooth'),cell2mat(anno.new'),numClass);
 
 % soft
 % [svm_stats.acr_all.train_soft,svm_stats.prc.train_soft,svm_stats.rec.train_soft,...
@@ -382,6 +414,7 @@ disp(table(svm_stats.acr.train,svm_stats.acr.test,svm_stats.acr.new_all,...
     'variablenames',{'train','test','new'}));
 
 % plot confusion matrix
+numClass = max(anno.train);
 num_plts = max([length(param.testIndx),3]);
 figure;set(gcf,'color','w','position',[2055 500 821 578])
 subplot(2,num_plts,1)
@@ -410,6 +443,36 @@ auc.test = plotROCmultic(anno.test,pred_score.test,numClass);
 legend('off')
 subplot(1,3,3)
 auc.new = plotROCmultic(cell2mat(anno.new'),cell2mat(pred_score.new'),numClass);
+
+% ---- smoothed version ------ %
+% plot confusion matrix
+numClass = max(anno.train);
+num_plts = max([length(param.testIndx),3]);
+figure;set(gcf,'color','w','position',[2055 500 821 578])
+subplot(2,num_plts,1)
+plotcmat(cmat.train_smooth,wbmap);title('Train');colorbar off
+subplot(2,num_plts,2)
+plotcmat(cmat.test_smooth,wbmap);title('Test');colorbar off
+subplot(2,num_plts,3)
+plotcmat(cmat.new_all_smooth,wbmap);title('New');colorbar off
+for n = 1:length(param.testIndx)
+    subplot(2,num_plts,length(param.testIndx)+n)
+    plotcmat(cmat.new_smooth{n},wbmap);
+    title(['New #' num2str(n)]);colorbar off
+end
+set(findall(gcf,'-property','FontSize'),'FontSize',9)
+
+% ROC curve
+figure;set(gcf,'color','w','position',[2079 168 792 236])
+subplot(1,3,1)
+auc.train = plotROCmultic(anno.train,pred_score.train,numClass);
+legend('off')
+subplot(1,3,2)
+auc.test = plotROCmultic(anno.test,pred_score.test,numClass);
+legend('off')
+subplot(1,3,3)
+auc.new = plotROCmultic(cell2mat(anno.new'),cell2mat(pred_score.new'),numClass);
+
 
 %% plot ethogram
 figure; set(gcf,'color','w')
