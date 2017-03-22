@@ -12,7 +12,7 @@ btype = [4,5,6];
 
 % smoothing kernel size
 fr = 5; % frame rate
-winsz = 1; % 10, in min
+winsz = 0.2; % 10, in min
 sig = ceil(winsz*60*fr/timeStep);
 mu = 2*ceil(2*sig)+1;
 fgauss = fspecial('gaussian',[mu,1],sig);

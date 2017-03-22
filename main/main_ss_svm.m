@@ -9,57 +9,43 @@ addpath(genpath('/home/sh3276/software/inria_fisher_v1/yael_v371/matlab'));
 addpath(genpath('/home/sh3276/work/code/other_sources/'))
 
 %% setup parameters
-param = struct();
+% use availabel seg and dt data
+srcstr = '20161019';
+parampath = '/home/sh3276/work/results/param/';
+load([parampath 'expt_param_' srcstr '.mat']);
 
 % file information
-param.fileIndx = [1:5,7:11,13:28,30:56];
-param.trainIndx = [1:5,7:11,13:24,26:28,30:32,34:54,56];
-param.testIndx = [25,33,55];
+param.fileIndx = [8,17,18,19,20,24];
+param.trainIndx = [8,17,18,19,20];
+param.testIndx = 24;
 
-param.datastr = '20161128';
+param.datastr = '20170223';
+param.srcstr = srcstr;
 
 param.dpathbase = '/home/sh3276/work/data';
 param.pbase = '/home/sh3276/work/results';
 param.dpath = sprintf('%s/bkg_subtracted/',param.dpathbase);
-param.segpath = sprintf('%s/seg/%s/',param.pbase,param.datastr);
-param.segvidpath = sprintf('%s/segvid/%s/',param.pbase,param.datastr);
-param.dtpath = sprintf('%s/dt/%s/',param.pbase,param.datastr);
-param.dtmatpath = sprintf('%s/dt/%s/mat/',param.pbase,param.datastr);
+param.segpath = sprintf('%s/seg/%s/',param.pbase,param.srcstr);
+param.segvidpath = sprintf('%s/segvid/%s/',param.pbase,param.srcstr);
+param.dtpath = sprintf('%s/dt/%s/',param.pbase,param.srcstr);
+param.dtmatpath = sprintf('%s/dt/%s/mat/',param.pbase,param.srcstr);
 param.fvpath = sprintf('%s/fv/%s/',param.pbase,param.datastr);
 param.svmpath = sprintf('%s/svm/%s/',param.pbase,param.datastr);
 param.tsnepath = sprintf('%s/tsne/%s/',param.pbase,param.datastr);
 param.annopath = sprintf('%s/annotations/',param.dpathbase);
 param.parampath = sprintf('%s/param/',param.pbase);
 
-param.wbmap = '/home/sh3276/work/results/wbmap.mat';
-% param.wbmap = 'C:\Shuting\Projects\hydra behavior\results\wbmap.mat';
-
-% segmentation/registration parameters
-param.seg.numRegion = 3;
-param.seg.skipStep = 1;
-param.seg.outputsz = [200,200];
-param.seg.ifscale = 1;
-
-% DT parameters
-param.dt.src = '/home/sh3276/software/dense_trajectory_release_v1.2/release_v4';
-param.dt.W = 5;
-param.dt.L = 15;
-param.dt.tlen = 5; % in seconds
-param.dt.s = 1;
-param.dt.t = 1;
-param.dt.N = 32;
 param.dt.thresh = 0.5;
 
+param.annotype = 13;
 param.fr = 5;
 param.timeStep = param.dt.tlen*param.fr;
-
-param.annotype = 5;
 param.infostr = sprintf('L_%u_W_%u_N_%u_s_%u_t_%u_step_%u',param.dt.L,...
     param.dt.W,param.dt.N,param.dt.s,param.dt.t,param.timeStep);
 
 % FV parameters
 param.fv.K = 128;
-param.fv.ci = 90;
+param.fv.ci = 70;
 param.fv.intran = 0;
 param.fv.powern = 1;
 param.fv.featstr = {'hof','hog','mbhx','mbhy'};
@@ -73,14 +59,6 @@ param.svm.kernel = 2; % 0 linear, 1 polynomial, 2 rbf, 3 sigmoid
 param.svm.probest = 1; % true
 param.svm.name = [param.infostr '_drFVall_annoType' num2str(param.annotype)];
 
-% embedding parameters
-param.tsne.distType = 'corr';
-param.tsne.closeMatPool = true;
-param.tsne.perplexity = 16;
-param.tsne.training_perplexity = 16;
-param.tsne = setRunParameters(param.tsne);
-param.tsne.percTrain = 0.8;
-param.tsne.annotype = 6;
 
 %% check if all directories exist
 if exist(param.dpath,'dir')~=7
@@ -90,16 +68,13 @@ if exist(param.annopath,'dir')~=7
     error('Incorrect annotation path')
 end
 if exist(param.segpath,'dir')~=7
-    fprintf('creating directory %s...\n',param.segpath);
-    mkdir(param.segpath);
+    error('Incorrect seg path')
 end
 if exist(param.dtpath,'dir')~=7
-    fprintf('creating directory %s...\n',param.dtpath);
-    mkdir(param.dtpath);
+    error('Incorrect dt path')
 end
 if exist(param.dtmatpath,'dir')~=7
-    fprintf('creating directory %s...\n',param.dtmatpath);
-    mkdir(param.dtmatpath);
+    error('Incorrect dtmat path')
 end
 if exist(param.fvpath,'dir')~=7
     fprintf('creating directory %s...\n',param.fvpath);
@@ -122,64 +97,6 @@ end
 dispStructNested(param,[],[param.parampath 'expt_param_' param.datastr '.txt']);
 save([param.parampath 'expt_param_' param.datastr '.mat'],'param');
 
-%% segmentation and registration
-numfile = length(param.fileIndx);
-
-% segmentation
-for n = 1:numfile
-    movieParam = paramAll(param.dpath,param.fileIndx(n));
-    fprintf('segmentation of %s...\n',movieParam.fileName);
-    [segAll,theta,centroid,a,b] = runBPSegmentation(movieParam);
-    save([param.segpath movieParam.fileName '_seg.mat'],'segAll','theta',...
-        'centroid','a','b','-v7.3');
-end
-
-% make registered video clips
-for n = 1:numfile
-    
-    movieParam = paramAll(param.dpath,param.fileIndx(n));
-    fprintf('processing %s...\n',movieParam.fileName);
-    
-    % registration and make scaled video clips
-    load([param.segpath movieParam.fileName '_seg.mat']);
-    regSeg = registerSegmentMask(segAll,theta,centroid,1);
-    segmat = makeRegisteredVideoCont(param.fileIndx(n),regSeg,param.timeStep,...
-        param.dpath,param.segpath,param.segvidpath,param.seg.ifscale,param.seg.outputsz);
-    save([param.segpath movieParam.fileName '_scaled_reg_seg_cont.mat'],'segmat','-v7.3');
-    
-end
-
-%% run Dense Trajectories in terminal
-% generate the script to run DT and save to dt result directory
-writeDTscript(param);
-
-% run DT
-try
-%     system(sprintf('chmod +x %srunDT.sh',param.dtpath));
-    status = system(sprintf('bash %srunDT.sh',param.dtpath));
-catch ME
-    error('Error running DenseTrajectoris');
-end
-
-%% extract DT features
-for i = 1:length(param.fileIndx)
-    
-    % load features
-    movieParam = paramAll(param.dpath,param.fileIndx(i));
-    fprintf('extracting features %s...\n',movieParam.fileName);
-    load([param.segpath movieParam.fileName '_scaled_reg_seg_cont.mat']);
-    [trajAll,hofAll,hogAll,mbhxAll,mbhyAll,coordAll] = extractRegionTwDTCont...
-        (movieParam,param.dtpath,segmat,param.seg.numRegion,param.dt);
-
-    % save features
-    save([param.dtmatpath movieParam.fileName '_' param.infostr '_traj.mat'],'trajAll','-v7.3');
-    save([param.dtmatpath movieParam.fileName '_' param.infostr '_hof.mat'],'hofAll','-v7.3');
-    save([param.dtmatpath movieParam.fileName '_' param.infostr '_hog.mat'],'hogAll','-v7.3');
-    save([param.dtmatpath movieParam.fileName '_' param.infostr '_mbhx.mat'],'mbhxAll','-v7.3');
-    save([param.dtmatpath movieParam.fileName '_' param.infostr '_mbhy.mat'],'mbhyAll','-v7.3');
-    save([param.dtmatpath movieParam.fileName '_' param.infostr '_coord.mat'],'coordAll','-v7.3');
-    
-end
 
 %% run Fisher Vector on features
 % ---------- training FV ---------- %
@@ -242,38 +159,61 @@ end
 %% generate SVM samples
 % training data
 sample = load([param.fvpath param.infostr '_drFVall.mat']);
+acm = sample.acm;
 sample = sample.drFVall;
+keep_dim = 5;
 
 % load annotations
 movieParamMulti = paramMulti(param.dpath,param.trainIndx);
 for n = 1:length(param.trainIndx)
-    movieParamMulti{n}.numImages = movieParamMulti{n}.numImages-param.timeStep;
+    movieParamMulti{n}.numImages = (acm(n+1)-acm(n))*param.timeStep;
 end
-annoAll = annoMulti(movieParamMulti,param.annopath,param.annotype,1);
+annoAll = annoMulti(movieParamMulti,param.annopath,param.annotype,param.timeStep);
 
 % write data
-param.svm.name = [param.infostr '_drFVall_annoType' num2str(param.annotype)];
-wei_str = mkLibSVMsample(sample,param.svm.percTrain,annoAll,param.svm.name,param.svmpath);
+% param.svm.name = [param.infostr '_drFVall_annoType' num2str(param.annotype)];
+% mkLibSVMsample(sample(:,1:keep_dim),param.svm.percTrain,annoAll,...
+%     param.svm.name,param.svmpath);
+
+% take equal number of two classes
+ff = 3;
+num_pos = sum(annoAll==1);
+keep_indx = find(annoAll==2);
+keep_indx = keep_indx(randperm(length(keep_indx),ff*num_pos));
+keep_indx = [keep_indx;find(annoAll==1)];
+mkLibSVMsample(sample(keep_indx,1:keep_dim),param.svm.percTrain,annoAll(keep_indx,:),...
+    param.svm.name,param.svmpath);
+
+% weights
+% wei_str = [];
+% [~,numClass] = annoInfo(param.annotype,1);
+% w = zeros(numClass,1);
+% labelset = unique(annoAll);
+% for n = 1:numClass
+%     w(n) = (length(annoAll)/sum(annoAll==labelset(n)))^2;
+%     wei_str = [wei_str ' -w' num2str(labelset(n)) ' ' num2str(w(n))];
+% end
+% wei_str = wei_str(2:end);
+wei_str = [' -w1 ' num2str(ff^2) ' -w2 1'];
 
 % test sample
 for n = 1:length(param.testIndx)
     
     movieParam = paramAll(param.dpath,param.testIndx(n));
-    movieParam.numImages = movieParam.numImages-param.timeStep;
     sample = load([param.fvpath movieParam.fileName '_' param.infostr '_drFVall.mat']);
     sample = sample.drFVall;
-    annoAll = annoMulti({movieParam},param.annopath,param.annotype,1);
+    annoAll = annoMulti({movieParam},param.annopath,param.annotype,param.timeStep);
     keepIndx = annoAll~=0;
 
     % write to libsvm format file
-    gnLibsvmFile(annoAll(keepIndx),sample(keepIndx,:),[param.svmpath ...
+    gnLibsvmFile(annoAll(keepIndx),sample(keepIndx,1:keep_dim),[param.svmpath ...
         param.svm.name '_' movieParam.fileName '.txt']);
 
 end
 
 %% SVM
 % train SVM
-writeSVMscript(param.svm,wei_str,param.svmpath,param.svm.name);
+writeSVMscriptSS(param.svm,wei_str,param.svmpath,param.svm.name);
 try 
     system(sprintf('chmod +x %srunSVM.sh',param.svmpath));
     status = system(sprintf('bash %srunSVM.sh',param.svmpath));
@@ -304,18 +244,10 @@ anno.test = label(indxTest);
 [pred.test,pred_score.test,pred.test_soft] = saveSVMpred(param.svmpath,[param.svm.name '_test']);
 for n = 1:length(param.testIndx)
     movieParam = paramAll(param.dpath,param.testIndx(n));
-    movieParam.numImages = movieParam.numImages-param.timeStep;
-    annoAll = annoMulti({movieParam},param.annopath,param.annotype,1);
+    annoAll = annoMulti({movieParam},param.annopath,param.annotype,param.timeStep);
     anno.new{n} = annoAll(annoAll~=0);
     [pred.new{n},pred_score.new{n},pred.new_soft{n}] = saveSVMpred(param.svmpath,...
         [param.svm.name '_' fileinfo(param.testIndx(n))]);
-end
-
-% prediction with smoothing
-pred.train_smooth = smooth_prediction(pred.train,param.timeStep);
-pred.test_smooth = smooth_prediction(pred.test,param.timeStep);
-for n = 1:length(param.testIndx)
-    pred.new_smooth{n} = smooth_prediction(pred.new{n},param.timeStep);
 end
 
 save([param.svmpath 'annotype' num2str(param.annotype) '_mat_results.mat'],...
@@ -329,15 +261,13 @@ numClass = max(anno.train);
 svm_stats = struct();
 cmat = struct();
 
-% raw prediction
 [svm_stats.acr_all.train,svm_stats.prc.train,svm_stats.rec.train,...
     svm_stats.acr.train,cmat.train] = precisionrecall(pred.train,anno.train,numClass);
 [svm_stats.acr_all.test,svm_stats.prc.test,svm_stats.rec.test,...
     svm_stats.acr.test,cmat.test] = precisionrecall(pred.test,anno.test,numClass);
 for n = 1:length(param.testIndx)
     movieParam = paramAll(param.dpath,param.testIndx(n));
-    movieParam.numImages = movieParam.numImages-param.timeStep;
-    annoAll = annoMulti({movieParam},param.annopath,param.annotype,1);
+    annoAll = annoMulti({movieParam},param.annopath,param.annotype,param.timeStep);
     anno.new{n} = annoAll(annoAll~=0);
     [svm_stats.acr_all.new(n),svm_stats.prc.new{n},svm_stats.rec.new{n},...
         svm_stats.acr.new{n},cmat.new{n}] = precisionrecall(pred.new{n},anno.new{n},numClass);
@@ -346,58 +276,14 @@ end
 [svm_stats.acr_all.new_all,svm_stats.prc.new_all,svm_stats.rec.new_all,...
     svm_stats.acr.new_all,cmat.new_all] = precisionrecall...
     (cell2mat(pred.new'),cell2mat(anno.new'),numClass);
-
-% smooth prediction
-[svm_stats.acr_all.train_smooth,svm_stats.prc.train_smooth,svm_stats.rec.train_smooth,...
-    svm_stats.acr.train_smooth,cmat.train_smooth] = precisionrecall...
-    (pred.train_smooth,anno.train,numClass);
-[svm_stats.acr_all.test_smooth,svm_stats.prc.test,svm_stats.rec.test,...
-    svm_stats.acr.test,cmat.test] = precisionrecall(pred.test,anno.test,numClass);
-for n = 1:length(param.testIndx)
-    movieParam = paramAll(param.dpath,param.testIndx(n));
-    movieParam.numImages = movieParam.numImages-param.timeStep;
-    annoAll = annoMulti({movieParam},param.annopath,param.annotype,1);
-    anno.new{n} = annoAll(annoAll~=0);
-    [svm_stats.acr_all.new(n),svm_stats.prc.new{n},svm_stats.rec.new{n},...
-        svm_stats.acr.new{n},cmat.new{n}] = precisionrecall(pred.new{n},anno.new{n},numClass);
-end
-
-[svm_stats.acr_all.new_all,svm_stats.prc.new_all,svm_stats.rec.new_all,...
-    svm_stats.acr.new_all,cmat.new_all] = precisionrecall...
-    (cell2mat(pred.new'),cell2mat(anno.new'),numClass);
-
-% soft
-% [svm_stats.acr_all.train_soft,svm_stats.prc.train_soft,svm_stats.rec.train_soft,...
-%     svm_stats.acr.train_soft,cmat.train_soft] = precisionrecall(pred.train_soft,...
-%     anno.train_soft,numClass);
-% [svm_stats.acr_all.test,svm_stats.prc.test,svm_stats.rec.test,...
-%     svm_stats.acr.test,cmat.test] = precisionrecall(pred.test,anno.test,numClass);
-% for n = 1:length(param.testIndx)
-%     movieParam = paramAll(param.dpath,param.testIndx(n));
-%     annoAll = annoMulti({movieParam},param.annopath,param.annotype,param.timeStep);
-%     anno.new{n} = annoAll(annoAll~=0);
-%     [svm_stats.acr_all.new(n),svm_stats.prc.new{n},svm_stats.rec.new{n},...
-%         svm_stats.acr.new{n},cmat.new{n}] = precisionrecall(pred.new{n},anno.new{n},numClass);
-% end
-
-svm_stats.acr_all.train_soft = sum(anno.train==pred.train_soft(:,1)|...
-    anno.train==pred.train_soft(:,2)|anno.train==pred.train_soft(:,3))/length(anno.train);
-svm_stats.acr_all.test_soft = sum(anno.test==pred.test_soft(:,1)|...
-    anno.test==pred.test_soft(:,2)|anno.test==pred.test_soft(:,3))/length(anno.test);
-for n = 1:length(param.testIndx)
-    svm_stats.acr_all.new_soft(n) = sum(anno.new{n}==pred.new_soft{n}(:,1)|...
-        anno.new{n}==pred.new_soft{n}(:,2)|anno.new{n}==pred.new_soft{n}(:,3))/length(anno.new{n});
-end
-sp = cell2mat(pred.new_soft');
-an = cell2mat(anno.new');
-svm_stats.acr_all.new_all_soft = sum(an==sp(:,1)|an==sp(:,2)|an==sp(:,3))/length(an);
-
 
 % save results
 save([param.svmpath 'annotype' num2str(param.annotype) '_stats.mat'],'svm_stats','cmat','-v7.3');
 
-%% plots
+%% plot results
 load(param.wbmap);
+% wbmap = 'C:\Shuting\Projects\hydra behavior\results\wbmap.mat';
+load(wbmap);
 
 disp(svm_stats.acr_all);
 fprintf('Precision:\n');
@@ -411,24 +297,23 @@ disp(table(svm_stats.acr.train,svm_stats.acr.test,svm_stats.acr.new_all,...
     'variablenames',{'train','test','new'}));
 
 % plot confusion matrix
-numClass = max(anno.train);
-num_plts = max([length(param.testIndx),3]);
+num_plts = max([length(pred.new),3]);
 figure;set(gcf,'color','w','position',[2055 500 821 578])
 subplot(2,num_plts,1)
 plotcmat(cmat.train,wbmap);title('Train');colorbar off
-% gcapos = get(gca,'position');colorbar off; set(gca,'position',gcapos);
+gcapos = get(gca,'position');colorbar off; set(gca,'position',gcapos);
 subplot(2,num_plts,2)
 plotcmat(cmat.test,wbmap);title('Test');colorbar off
-% gcapos = get(gca,'position');colorbar off; set(gca,'position',gcapos);
+gcapos = get(gca,'position');colorbar off; set(gca,'position',gcapos);
 subplot(2,num_plts,3)
 plotcmat(cmat.new_all,wbmap);title('New');colorbar off
-for n = 1:length(param.testIndx)
-    subplot(2,num_plts,length(param.testIndx)+n)
+for n = 1:length(pred.new)
+    subplot(2,num_plts,length(pred.new)+num_plts)
     plotcmat(cmat.new{n},wbmap);
     title(['New #' num2str(n)]);colorbar off
 %     gcapos = get(gca,'position');colorbar off;set(gca,'position',gcapos)
 end
-set(findall(gcf,'-property','FontSize'),'FontSize',9)
+% set(findall(gcf,'-property','FontSize'),'FontSize',9)
 
 % ROC curve
 figure;set(gcf,'color','w','position',[2079 168 792 236])
@@ -440,32 +325,3 @@ auc.test = plotROCmultic(anno.test,pred_score.test,numClass);
 legend('off')
 subplot(1,3,3)
 auc.new = plotROCmultic(cell2mat(anno.new'),cell2mat(pred_score.new'),numClass);
-
-%% plot ethogram
-figure; set(gcf,'color','w')
-for n = 1:length(param.testIndx)
-    subplot(length(param.testIndx),1,n); hold on
-    plotEthogram(pred.new{n},param.annotype);
-end
-
-%% embedding
-fparam = struct();
-fparam.filepath = param.fvpath;
-fparam.infostr = param.infostr;
-fparam.trainIndx = param.trainIndx;
-fparam.testIndx = param.testIndx;
-fparam.dpath = param.dpath;
-fparam.tsnepath = param.tsnepath;
-fparam.datastr = param.datastr;
-fparam.annopath = param.annopath;
-fparam.timeStep = 25;
-fparam.K = param.fv.K;
-
-
-runFVtsne(fparam,param.tsne);
-
-
-
-
-
-

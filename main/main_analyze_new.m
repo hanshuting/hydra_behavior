@@ -11,16 +11,16 @@ addpath(genpath('/home/sh3276/software/inria_fisher_v1/yael_v371/matlab'));
 param = struct();
 
 % file information
-param.fileIndx = 718:747;
+param.fileIndx = 760:790;
 % param.fileIndx = [502,504,506]; % for ss
 % param.fileIndx = [304,328]; % for ss
 
-param.datastr = '20161215';
+param.datastr = '20161024';
 param.mstr = '20161019';
 
-param.pbase = '/home/sh3276/work/results/dark_light';
+param.pbase = '/home/sh3276/work/results/day_night';
 param.mbase = '/home/sh3276/work/results';
-param.dpath = '/home/sh3276/work/data/dark_light/';
+param.dpath = '/home/sh3276/work/data/day_night/';
 param.segpath = sprintf('%s/seg/%s/',param.pbase,param.datastr);
 param.segvidpath = sprintf('%s/segvid/%s/',param.pbase,param.datastr);
 param.dtpath = sprintf('%s/dt/%s/',param.pbase,param.datastr);
@@ -82,40 +82,41 @@ if exist(param.dpath,'dir')~=7
     error('Incorrect data path')
 end
 if exist(param.segpath,'dir')~=7
-    fprintf('creating directory %s...\n',param.segpath);
     mkdir(param.segpath);
+    fprintf('created directory %s\n',param.segpath);
 end
 if exist(param.segvidpath,'dir')~=7
-    fprintf('creating directory %s...\n',param.segpath);
     mkdir(param.segvidpath);
+    fprintf('created directory %s\n',param.segpath);
 end
 if exist(param.dtpath,'dir')~=7
-    fprintf('creating directory %s...\n',param.dtpath);
     mkdir(param.dtpath);
+    fprintf('created directory %s\n',param.dtpath);
 end
 if exist(param.dtmatpath,'dir')~=7
-    fprintf('creating directory %s...\n',param.dtmatpath);
     mkdir(param.dtmatpath);
+    fprintf('created directory %s\n',param.dtmatpath);
 end
 if exist(param.fvpath,'dir')~=7
-    fprintf('creating directory %s...\n',param.fvpath);
     mkdir(param.fvpath);
+    fprintf('created directory %s\n',param.fvpath);
 end
 if exist(param.svmpath,'dir')~=7
-    fprintf('creating directory %s...\n',param.svmpath);
     mkdir(param.svmpath);
+    fprintf('created directory %s\n',param.svmpath);
 end
 if exist(param.tsnepath,'dir')~=7
-    fprintf('creating directory %s...\n',param.tsnepath);
     mkdir(param.tsnepath);
+    fprintf('created directory %s\n',param.tsnepath);
 end
 if exist(param.parampath,'dir')~=7
-    fprintf('creating directory %s...\n',param.parampath);
     mkdir(param.parampath);
+    fprintf('created directory %s\n',param.parampath);
 end
 
 % save parameters to file
 dispStructNested(param,[],[param.parampath 'expt_param_' param.datastr '.txt']);
+save([param.parampath 'expt_param_' param.datastr '.mat'],'param');
 
 %% segmentation and registration
 numfile = length(param.fileIndx);
@@ -133,7 +134,7 @@ end
 for n = 1:numfile
 
     movieParam = paramAll(param.dpath,param.fileIndx(n));
-    fprintf('processing %s...\n',movieParam.fileName);
+    fprintf('making videos %s...\n',movieParam.fileName);
     
     % registration and make scaled video clips
     load([param.segpath movieParam.fileName '_seg.mat']);
@@ -151,13 +152,13 @@ clear segmat
 % generate the script to run DT and save to dt result directory
 writeDTscript(param);
 
-% run DT
-try 
-%     system(sprintf('chmod +x %srunDT.sh',param.dtpath));
-    status = system(sprintf('bash %srunDT.sh',param.dtpath));
-catch ME
-    error('Error running DenseTrajectoris');
-end
+% run DT - do it manually in terminal, use dbcont to continue
+keyboard;
+% try 
+%     status = system(sprintf('bash %srunDT.sh',param.dtpath));
+% catch ME
+%     error('Error running DenseTrajectoris');
+% end
 
 %% extract DT features
 for i = 1:length(param.fileIndx)
@@ -188,7 +189,7 @@ load(sprintf('%s/fv/%s/%s_pcaCoeff.mat',param.mbase,param.mstr,param.infostr));
 for n = 1:length(param.fileIndx)
     
     movieParam = paramAll(param.dpath,param.fileIndx(n));
-    fprintf('processing sample: %s\n', movieParam.fileName);
+    fprintf('running FV on sample: %s\n', movieParam.fileName);
     
     for ii = 1:length(param.fv.featstr)
         fvparam = param.fv;
@@ -221,6 +222,7 @@ for n = 1:length(param.fileIndx)
     label = zeros(size(sample,1),1);
 
     % write to libsvm format file
+    fprintf('writing SVM sample: %s\n',movieParam.fileName);
     gnLibsvmFile(label,sample,[param.svmpath param.svm.name '_' movieParam.fileName '.txt']);
 
 end
@@ -243,10 +245,10 @@ end
 % save prediction result to mat files
 for n = 1:num_file
     fname = fileinfo(param.fileIndx(n));
-    [pred,pred_score] = saveSVMpred(param.svmpath,...
+    [pred,pred_score,pred_soft] = saveSVMpred(param.svmpath,...
         [param.svm.name '_' fileinfo(param.fileIndx(n))]);
     save([param.svmpath fname '_annotype' num2str(param.annotype) ...
-        '_pred_results.mat'],'pred','pred_score','-v7.3');
+        '_pred_results.mat'],'pred','pred_score','pred_soft','-v7.3');
 end
 
 

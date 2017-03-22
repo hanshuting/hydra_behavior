@@ -150,6 +150,9 @@ switch mergetype
         annoAll(annoRaw==41|annoRaw==42) = 5; % bending
         annoAll(annoRaw==63|annoRaw==64|annoRaw==65|...
             annoRaw==66|annoRaw==54) = 6; % contraction
+    case 13
+        annoAll(annoRaw==73|annoRaw==74) = 1; % ss
+        annoAll(annoAll~=1) = 2; % non ss
     otherwise
         error('invalid annotation merging scheme');
 end

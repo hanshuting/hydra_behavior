@@ -283,30 +283,113 @@ end
 acr_all.train(end+1,:) = repmat(full_result.svm_stats.acr_all.train,1,R);
 acr_all.test(end+1,:) = repmat(full_result.svm_stats.acr_all.test,1,R);
 acr_all.new(end+1,:) = repmat(full_result.svm_stats.acr_all.new_all,1,R);
-acr.train(N+1,:,:) = repmat(full_result.svm_stats.acr.train,1,R,1);
-acr.test(N+1,:,:) = repmat(full_result.svm_stats.acr.test,1,R,1);
-acr.new(N+1,:,:) = repmat(full_result.svm_stats.acr.new_all,1,R,1);
+acr.train(N+1,:,:) = repmat(reshape(full_result.svm_stats.acr.train,1,1,numClass),1,R,1);
+acr.test(N+1,:,:) = repmat(reshape(full_result.svm_stats.acr.test,1,1,numClass),1,R,1);
+acr.new(N+1,:,:) = repmat(reshape(full_result.svm_stats.acr.new_all,1,1,numClass),1,R,1);
 
-% plot overall accuracy
-figure;
-subplot(1,3,1)
-plot(1:num_md+1,acr_all.train);
-subplot(1,3,2)
-plot(1:num_md+1,acr_all.test);
-subplot(1,3,3)
-plot(1:num_md+1,acr_all.new);
+% save results
+save([param.svmpath 'annotype' num2str(param.annotype) '_stats_all_results'],...
+    'acr_all','acr','num_md','-v7.3');
 
-% plot accuracy of individual classes
-cc = jet(num_md+1);
+%% plot  accuracy
+p = 0.05;
+mksz = 15;
+linew = 1;
+stepsz = 0.2;
+cc = jet(numClass+1);
 cc = max(cc-0.3,0);
+xvec = [param.trainSize,length(param.trainIndxAll)];
+
 figure;
+set(gcf,'color','w')
+
+% plot overall
+subplot(3,numClass+1,1); hold on
+pval = zeros(num_md,1);
+for ii = 1:num_md+1
+    scatter(ii*ones(num_rep,1),acr_all.train(ii,:),mksz,0.7*[1 1 1],'filled');
+    [~,pval(ii)] = ttest2(acr_all.train(ii,:),acr_all.train(end,:));
+    if pval(ii)<p
+        scatter(ii,max(acr_all.train(:))+0.1,'k*');
+    end
+    plot([ii-stepsz,ii+stepsz],mean(acr_all.train(ii,:))*[1 1],'k','linewidth',linew);
+end
+plot(1:num_md+1,mean(acr_all.train,2),'linewidth',linew,'color','k');
+xlim([0 num_md+2]); ylim([0 1.1]); 
+set(gca,'xtick',1:num_md+1,'xticklabel',xvec)
+box off; ylabel('accuracy')
+subplot(3,numClass+1,numClass+2); hold on
+pval = zeros(num_md,1);
+for ii = 1:num_md+1
+    scatter(ii*ones(num_rep,1),acr_all.test(ii,:),mksz,0.7*[1 1 1],'filled');
+    [~,pval(ii)] = ttest2(acr_all.test(ii,:),acr_all.test(end,:));
+    if pval(ii)<p
+        scatter(ii,max(acr_all.test(:))+0.1,'k*');
+    end
+    plot([ii-stepsz,ii+stepsz],mean(acr_all.test(ii,:))*[1 1],'k','linewidth',linew);
+end
+plot(1:num_md+1,mean(acr_all.test,2),'linewidth',linew,'color','k');
+xlim([0 num_md+2]); ylim([0 1.1]); 
+set(gca,'xtick',1:num_md+1,'xticklabel',xvec)
+box off; ylabel('accuracy')
+subplot(3,numClass+1,2*(numClass+1)+1); hold on
+pval = zeros(num_md,1);
+for ii = 1:num_md+1
+    scatter(ii*ones(num_rep,1),acr_all.new(ii,:),mksz,0.7*[1 1 1],'filled');
+    [~,pval(ii)] = ttest2(acr_all.new(ii,:),acr_all.new(end,:));
+    if pval(ii)<p
+        scatter(ii,max(acr_all.new(:))+0.1,'k*');
+    end
+    plot([ii-stepsz,ii+stepsz],mean(acr_all.new(ii,:))*[1 1],'k','linewidth',linew);
+end
+plot(1:num_md+1,mean(acr_all.new,2),'linewidth',linew,'color','k');
+xlim([0 num_md+2]); ylim([0 1.1]); 
+set(gca,'xtick',1:num_md+1,'xticklabel',xvec)
+box off; xlabel('number of hydra'); ylabel('accuracy')
+
+% plot each class
 for m = 1:numClass
-    subplot(3,numClass,m);
-    plot(1:num_md+1,acr.train(:,m))
-    subplot(3,numClass,m+numClass);
-    plot(1:num_md+1,acr.test(:,m))
-    subplot(3,numClass,m+numClass*2);
-    plot(1:num_md+1,acr.new(:,m))
+    
+    subplot(3,numClass+1,m+1); hold on
+    for ii = 1:num_md+1
+        scatter(ii*ones(num_rep,1),acr.train(ii,:,m),mksz,cc(m,:),'filled');
+        [~,pval(ii)] = ttest2(acr.train(ii,:,m),acr.train(end,:,m));
+        if pval(ii)<p
+            scatter(ii,max(max(acr.train(:,:,m)))+0.1,'k*');
+        end
+        plot([ii-stepsz,ii+stepsz],mean(acr.train(ii,:,m))*[1 1],'k','linewidth',linew);
+    end
+    plot(1:num_md+1,mean(acr.train(:,:,m),2),'linewidth',linew,'color','k');
+    xlim([0 num_md+2]); ylim([0 1.1]); 
+    set(gca,'xtick',1:num_md+1,'xticklabel',xvec)
+    
+    subplot(3,numClass+1,m+numClass+2); hold on
+    for ii = 1:num_md+1
+        scatter(ii*ones(num_rep,1),acr.test(ii,:,m),mksz,cc(m,:),'filled');
+        [~,pval(ii)] = ttest2(acr.test(ii,:,m),acr.test(end,:,m));
+        if pval(ii)<p
+            scatter(ii,max(max(acr.test(:,:,m)))+0.1,'k*');
+        end
+        plot([ii-stepsz,ii+stepsz],mean(acr.test(ii,:,m))*[1 1],'k','linewidth',linew);
+    end
+    plot(1:num_md+1,mean(acr.test(:,:,m),2),'linewidth',linew,'color','k');
+    xlim([0 num_md+2]); ylim([0 1.1]); 
+    set(gca,'xtick',1:num_md+1,'xticklabel',xvec)
+    
+    subplot(3,numClass+1,m+(numClass+1)*2+1); hold on
+    for ii = 1:num_md+1
+        scatter(ii*ones(num_rep,1),acr.new(ii,:,m),mksz,cc(m,:),'filled');
+        [~,pval(ii)] = ttest2(acr.new(ii,:,m),acr.new(end,:,m));
+        if pval(ii)<p
+            scatter(ii,max(max(acr.new(:,:,m)))+0.1,'k*');
+        end
+        plot([ii-stepsz,ii+stepsz],mean(acr.new(ii,:,m))*[1 1],'k','linewidth',linew);
+    end
+    plot(1:num_md+1,mean(acr.new(:,:,m),2),'linewidth',linew,'color','k');
+    xlim([0 num_md+2]); ylim([0 1.1]); 
+    set(gca,'xtick',1:num_md+1,'xticklabel',xvec)
+    xlabel('number of hydra')
+    
 end
 
 

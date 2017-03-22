@@ -26,7 +26,7 @@ if saveresult
             num2str(c(5)) num2str(round(c(6)))];
     end
     writerobj = VideoWriter(['C:\Users\shuting\Desktop\temp\outputs\' namestr '.avi']);
-    writerObj.FrameRate = 10;
+    writerobj.FrameRate = 30;
     open(writerobj);
 end
 
@@ -59,12 +59,13 @@ while flag==1
                 withinMovieFrameInd = frameIndx(j)-totPrevFrame(movieIndx);
     
                 % temporary modification to avoid errors
-                if withinMovieFrameInd==floor(movieParam.numImages/timeStep)
+%                 if withinMovieFrameInd==floor(movieParam.numImages/timeStep)
+                if (withinMovieFrameInd-1)*timeStep+k>movieParam.numImages
                     continue;
+                else
+                    im = double(imread([movieParam.filePath movieParam.fileName '.tif'],...
+                        (withinMovieFrameInd-1)*timeStep+k));
                 end
-                
-                im = double(imread([movieParam.filePath movieParam.fileName '.tif'],...
-                    (withinMovieFrameInd-1)*timeStep+k));
                 
                 % get color axis range
                 if isempty(color_range)

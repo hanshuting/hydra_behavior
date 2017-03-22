@@ -187,6 +187,15 @@ switch annoType
         else
             warning('unrecognized annotation label!');
         end
+    case 13
+        numClass = 2;
+        if num==1
+            annostr = 'somersaulting';
+        elseif num==2
+            annostr = 'non somersaulting';
+        else
+            warning('unrecognized annotation label!');
+        end
     otherwise
         error('unrecognized annotation type');
 end

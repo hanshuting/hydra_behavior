@@ -17,10 +17,10 @@ indxTrain = indx(1:numTraining)';
 indxTest = indx(numTraining+1:end)';
 
 figure;set(gcf,'color','w');
-subplot(1,2,1);hist(label(indxTrain),[min(label):max(label)]+0.5);
+subplot(1,2,1);hist(label(indxTrain),[min(label):max(label)]);
 title('training sample distribution');
 xlabel('class');ylabel('number of samples');
-subplot(1,2,2);hist(label(indxTest),[min(label):max(label)]+0.5);
+subplot(1,2,2);hist(label(indxTest),[min(label):max(label)]);
 title('testing sample distribution');
 xlabel('class');ylabel('number of samples');
 

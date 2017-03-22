@@ -435,8 +435,8 @@ fparam.K = param.fv.K;
 
 param.tsne.fs_meth = 'llcfs';
 
-% runFVtsne(fparam,param.tsne);
-runFVtsneFS(fparam,param.tsne);
+runFVtsne(fparam,param.tsne);
+% runFVtsneFS(fparam,param.tsne);
 
 %% svm with feature selection
 load([param.svmpath param.svm.name '_svm_data.mat']);

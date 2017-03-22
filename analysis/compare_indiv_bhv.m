@@ -11,6 +11,7 @@ annotype = 5;
 timeStep = 25;
 fr = 5; % frame rate
 
+[~,numClass] = annoInfo(annotype,1);
 bhv_str = cell(1,numClass);
 for n = 1:numClass
     bhv_str{n} = annoInfo(annotype,n);
