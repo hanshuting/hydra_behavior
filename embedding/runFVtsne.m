@@ -305,12 +305,12 @@ for ii = 1:numAnnoClass
 end
 
 %% visualize video samples
-% qlabel = 1;
-% figure;imagesc((reg_im==qlabel).*im);
-% caxis([min(densAll(:)),max(densAll(:))]);colormap(jet);
-% axis equal tight off xy
-% % visualizeResultMulti_galois(find(segIndx==qlabel),timeStep,movieParamMulti,1,0,'');
-% visualizeResultMulti(find(regIndx==qlabel),timeStep,movieParamMulti,1,1,num2str(qlabel));
+qlabel = 1;
+figure;imagesc((reg_im==qlabel).*im);
+caxis([min(densAll(:)),max(densAll(:))]);colormap(jet);
+axis equal tight off xy
+% visualizeResultMulti_galois(find(segIndx==qlabel),timeStep,movieParamMulti,1,0,'');
+visualizeResultMulti(find(regIndx==qlabel),timeStep,movieParamMulti,1,1,num2str(qlabel));
 
 %% save results
 save([param.tsnepath param.infostr '_K_' num2str(param.K) '_' param.datastr...

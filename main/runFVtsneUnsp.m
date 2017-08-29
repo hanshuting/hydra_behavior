@@ -145,7 +145,7 @@ vdata(vdata>=numPoints) = numPoints;
 segIndx = seg_im_trans(sub2ind(size(im),vdata(:,1),vdata(:,2)));
 
 % make video for each region
-dpath = 'F:\Data Timelapse Chris\20160613-18 time lapse WT\processed\';
+dpath = 'E:\Data Timelapse Chris\20160613-18 time lapse WT\processed\';
 movieParamMulti = paramMulti(dpath,param.fileIndx);
 for ii = 1:num_seg;
     % visualizeResultMulti_galois(find(segIndx==qlabel),timeStep,movieParamMulti,1,0,'');

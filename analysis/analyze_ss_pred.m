@@ -25,10 +25,10 @@ cc.gray = 0.8*[1 1 1];
 %% from new sample
 dpath = 'C:\Shuting\Projects\hydra behavior\results\svm\20161019\';
 load([dpath 'annotype' num2str(annotype) '_mat_results.mat']);
-% sstw = 1:1925/timeStep;
-% ctrltw = 3000/timeStep:5000/timeStep;
-sstw = 975/timeStep:1300/timeStep;
-ctrltw = 4000/timeStep:4500/timeStep;
+sstw = 1:1925/timeStep;
+ctrltw = 3000/timeStep:5000/timeStep;
+% sstw = 975/timeStep:1300/timeStep;
+% ctrltw = 4000/timeStep:4500/timeStep;
 sspred = pred.new_soft{2}(sstw,:);
 ctrlpred = pred.new_soft{2}(ctrltw,:);
 

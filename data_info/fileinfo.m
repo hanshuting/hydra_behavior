@@ -2530,8 +2530,54 @@ switch indx
         numImages = 20390;
         fr = 5;
         sz = [193,193];
-        
-     % ------------------------- flat prep ----------------------- %
+    % ------------------------- starved ----------------------- %
+    case 1126
+		fileName = '20170321_starved_big_light_1';
+		numImages = 10900;
+		fr = 5;
+		sz = [322,322];
+	case 1127
+		fileName = '20170321_starved_big_light_2';
+		numImages = 16384;
+		fr = 5;
+		sz = [205,205];
+	case 1128
+		fileName = '20170321_starved_big_light_3';
+		numImages = 17065;
+		fr = 5;
+		sz = [319,319];
+	case 1129
+		fileName = '20170321_starved_big_light_4';
+		numImages = 16616;
+		fr = 5;
+		sz = [212,212];
+	case 1130
+		fileName = '20170322_starved_big_light_1';
+		numImages = 17499;
+		fr = 5;
+		sz = [262,262];
+	case 1131
+		fileName = '20170322_starved_big_light_2';
+		numImages = 17587;
+		fr = 5;
+		sz = [283,283];
+	case 1132
+		fileName = '20170323_starved_big_light_1';
+		numImages = 16716;
+		fr = 5;
+		sz = [283,283];
+	case 1133
+		fileName = '20170323_starved_big_light_2';
+		numImages = 16125;
+		fr = 5;
+		sz = [281,281];
+	case 1134
+		fileName = '20170327_starved_big_light_1';
+		numImages = 16622;
+		fr = 5;
+		sz = [308,308];
+
+    % ------------------------- flat prep ----------------------- %
     case 1201
         fileName = '20170216_flat_1';
         numImages = 10458;
@@ -2677,7 +2723,659 @@ switch indx
         numImages = 9821;
         fr = 5;
         sz = [208,208];
-
+    % --------------------- green hydra fed light ----------------- %
+	case 1301
+		fileName = '20170322_vir_small_fed_light-1';
+		numImages = 32716;
+		fr = 5;
+		sz = [173,173];
+	case 1302
+		fileName = '20170322_vir_small_fed_light-2';
+		numImages = 32716;
+		fr = 5;
+		sz = [165,165];
+	case 1303
+		fileName = '20170322_vir_small_fed_light-3';
+		numImages = 32716;
+		fr = 5;
+		sz = [210,210];
+	case 1304
+		fileName = '20170322_vir_small_fed_light-4';
+		numImages = 32716;
+		fr = 5;
+		sz = [230,230];
+	case 1305
+		fileName = '20170322_vir_small_fed_light-5';
+		numImages = 32716;
+		fr = 5;
+		sz = [228,228];
+	case 1306
+		fileName = '20170322_vir_small_fed_light-6';
+		numImages = 32716;
+		fr = 5;
+		sz = [232,232];
+	case 1307
+		fileName = '20170322_vir_small_fed_light-7';
+		numImages = 32716;
+		fr = 5;
+		sz = [215,215];
+	case 1308
+		fileName = '20170322_vir_small_fed_light-8';
+		numImages = 11602;
+		fr = 5;
+		sz = [219,219];
+	case 1309
+		fileName = '20170323_vir_small_fed_light-1';
+		numImages = 24537;
+		fr = 5;
+		sz = [268,294];
+	case 1310
+		fileName = '20170323_vir_small_fed_light-2';
+		numImages = 32716;
+		fr = 5;
+		sz = [261,261];
+	case 1311
+		fileName = '20170323_vir_small_fed_light-3';
+		numImages = 32716;
+		fr = 5;
+		sz = [278,278];
+	case 1312
+		fileName = '20170323_vir_small_fed_light-4';
+		numImages = 32716;
+		fr = 5;
+		sz = [237,237];
+	case 1313
+		fileName = '20170323_vir_small_fed_light-5';
+		numImages = 32716;
+		fr = 5;
+		sz = [243,239];
+	case 1314
+		fileName = '20170323_vir_small_fed_light-6';
+		numImages = 14112;
+		fr = 5;
+		sz = [295,262];
+	case 1315
+		fileName = '20170329_vir_small_fed_light_1';
+		numImages = 32716;
+		fr = 5;
+		sz = [170,170];
+	case 1316
+		fileName = '20170329_vir_small_fed_light_2';
+		numImages = 32716;
+		fr = 5;
+		sz = [189,189];
+	case 1317
+		fileName = '20170329_vir_small_fed_light_3';
+		numImages = 32716;
+		fr = 5;
+		sz = [184,175];
+	case 1318
+		fileName = '20170329_vir_small_fed_light_4';
+		numImages = 32716;
+		fr = 5;
+		sz = [171,171];
+	case 1319
+		fileName = '20170329_vir_small_fed_light_5';
+		numImages = 32716;
+		fr = 5;
+		sz = [176,176];
+	case 1320
+		fileName = '20170329_vir_small_fed_light_6';
+		numImages = 32716;
+		fr = 5;
+		sz = [179,179];
+	case 1321
+		fileName = '20170329_vir_small_fed_light_7';
+		numImages = 32716;
+		fr = 5;
+		sz = [235,235];
+	case 1322
+		fileName = '20170329_vir_small_fed_light_8';
+		numImages = 40653;
+		fr = 5;
+		sz = [205,205];
+	case 1323
+		fileName = '20170330_vir_small_fed_light_1';
+		numImages = 32716;
+		fr = 5;
+		sz = [261,263];
+	case 1324
+		fileName = '20170330_vir_small_fed_light_2';
+		numImages = 32716;
+		fr = 5;
+		sz = [241,241];
+	case 1325
+		fileName = '20170330_vir_small_fed_light_3';
+		numImages = 32716;
+		fr = 5;
+		sz = [238,238];
+	case 1326
+		fileName = '20170330_vir_small_fed_light_4';
+		numImages = 32716;
+		fr = 5;
+		sz = [225,225];
+	case 1327
+		fileName = '20170330_vir_small_fed_light_5';
+		numImages = 32716;
+		fr = 5;
+		sz = [208,208];
+	case 1328
+		fileName = '20170330_vir_small_fed_light_6';
+		numImages = 32716;
+		fr = 5;
+		sz = [269,269];
+	case 1329
+		fileName = '20170330_vir_small_fed_light_7';
+		numImages = 32899;
+		fr = 5;
+		sz = [259,259];
+	case 1330
+		fileName = '20170403_vir_fed_light_1';
+		numImages = 32716;
+		fr = 5;
+		sz = [306,290];
+	case 1331
+		fileName = '20170403_vir_fed_light_2';
+		numImages = 32716;
+		fr = 5;
+		sz = [247,248];
+	case 1332
+		fileName = '20170403_vir_fed_light_3';
+		numImages = 32716;
+		fr = 5;
+		sz = [261,277];
+	case 1333
+		fileName = '20170403_vir_fed_light_4';
+		numImages = 32716;
+		fr = 5;
+		sz = [278,278];
+	case 1334
+		fileName = '20170403_vir_fed_light_5';
+		numImages = 32716;
+		fr = 5;
+		sz = [223,223];
+	case 1335
+		fileName = '20170403_vir_fed_light_6';
+		numImages = 32716;
+		fr = 5;
+		sz = [175,175];
+	case 1336
+		fileName = '20170403_vir_fed_light_7';
+		numImages = 32716;
+		fr = 5;
+		sz = [153,153];
+	case 1337
+		fileName = '20170403_vir_fed_light_8';
+		numImages = 32716;
+		fr = 5;
+		sz = [163,163];
+	case 1338
+		fileName = '20170403_vir_fed_light_9';
+		numImages = 8203;
+		fr = 5;
+		sz = [163,163];
+% ------------------- dark/light AEP fed ---------------- %
+    case 1401
+		fileName = '20170406_light-1';
+		numImages = 32716;
+		fr = 5;
+		sz = [145,145];
+	case 1402
+		fileName = '20170406_light-2';
+		numImages = 32716;
+		fr = 5;
+		sz = [144,144];
+	case 1403
+		fileName = '20170406_light-3';
+		numImages = 32716;
+		fr = 5;
+		sz = [187,187];
+	case 1404
+		fileName = '20170406_light-4';
+		numImages = 32716;
+		fr = 5;
+		sz = [166,159];
+	case 1405
+		fileName = '20170406_light-5';
+		numImages = 32716;
+		fr = 5;
+		sz = [151,155];
+	case 1406
+		fileName = '20170406_light-6';
+		numImages = 32716;
+		fr = 5;
+		sz = [162,162];
+	case 1407
+		fileName = '20170406_light-7';
+		numImages = 32716;
+		fr = 5;
+		sz = [135,135];
+	case 1408
+		fileName = '20170406_light-8';
+		numImages = 23532;
+		fr = 5;
+		sz = [106,106];
+	case 1409
+		fileName = '20170410_light-1';
+		numImages = 32716;
+		fr = 5;
+		sz = [119,119];
+	case 1410
+		fileName = '20170410_light-2';
+		numImages = 32716;
+		fr = 5;
+		sz = [127,127];
+	case 1411
+		fileName = '20170410_light-3';
+		numImages = 32716;
+		fr = 5;
+		sz = [141,141];
+	case 1412
+		fileName = '20170410_light-4';
+		numImages = 32716;
+		fr = 5;
+		sz = [188,188];
+	case 1413
+		fileName = '20170410_light-5';
+		numImages = 32716;
+		fr = 5;
+		sz = [120,120];
+	case 1414
+		fileName = '20170410_light-6';
+		numImages = 32716;
+		fr = 5;
+		sz = [123,123];
+	case 1415
+		fileName = '20170410_light-7';
+		numImages = 32716;
+		fr = 5;
+		sz = [126,126];
+	case 1416
+		fileName = '20170410_light-8';
+		numImages = 39398;
+		fr = 5;
+		sz = [145,145];
+	case 1417
+		fileName = '20170411_light-1';
+		numImages = 32716;
+		fr = 5;
+		sz = [162,162];
+	case 1418
+		fileName = '20170411_light-2';
+		numImages = 32716;
+		fr = 5;
+		sz = [177,180];
+	case 1419
+		fileName = '20170411_light-3';
+		numImages = 32716;
+		fr = 5;
+		sz = [183,190];
+	case 1420
+		fileName = '20170411_light-4';
+		numImages = 32716;
+		fr = 5;
+		sz = [176,176];
+	case 1421
+		fileName = '20170411_light-5';
+		numImages = 32716;
+		fr = 5;
+		sz = [161,161];
+	case 1422
+		fileName = '20170411_light-6';
+		numImages = 32716;
+		fr = 5;
+		sz = [275,280];
+	case 1423
+		fileName = '20170411_light-7';
+		numImages = 32716;
+		fr = 5;
+		sz = [153,153];
+	case 1424
+		fileName = '20170411_light-8';
+		numImages = 26695;
+		fr = 5;
+		sz = [165,160];
+	case 1425
+		fileName = '20170412_light_ss';
+		numImages = 24300;
+		fr = 5;
+		sz = [341,371];
+	case 1426
+		fileName = '20170413_light-1';
+		numImages = 32716;
+		fr = 5;
+		sz = [145,145];
+	case 1427
+		fileName = '20170413_light-2';
+		numImages = 32716;
+		fr = 5;
+		sz = [171,171];
+	case 1428
+		fileName = '20170413_light-3';
+		numImages = 32716;
+		fr = 5;
+		sz = [188,188];
+	case 1429
+		fileName = '20170413_light-4';
+		numImages = 32716;
+		fr = 5;
+		sz = [154,154];
+	case 1430
+		fileName = '20170413_light-5';
+		numImages = 32716;
+		fr = 5;
+		sz = [114,114];
+	case 1431
+		fileName = '20170413_light-6';
+		numImages = 19725;
+		fr = 5;
+		sz = [105,105];
+	case 1432
+		fileName = '20170414_light-1';
+		numImages = 16287;
+		fr = 5;
+		sz = [193,193];
+	case 1433
+		fileName = '20170414_light-2';
+		numImages = 32716;
+		fr = 5;
+		sz = [257,257];
+	case 1434
+		fileName = '20170414_light-3';
+		numImages = 32716;
+		fr = 5;
+		sz = [156,156];
+	case 1435
+		fileName = '20170417_light-1';
+		numImages = 32716;
+		fr = 5;
+		sz = [120,120];
+	case 1436
+		fileName = '20170417_light-2';
+		numImages = 32716;
+		fr = 5;
+		sz = [127,127];
+	case 1437
+		fileName = '20170417_light-3';
+		numImages = 32716;
+		fr = 5;
+		sz = [110,110];
+	case 1438
+		fileName = '20170417_light-4';
+		numImages = 32716;
+		fr = 5;
+		sz = [97,97];
+	case 1439
+		fileName = '20170417_light-5';
+		numImages = 32716;
+		fr = 5;
+		sz = [102,102];
+	case 1440
+		fileName = '20170417_light-6';
+		numImages = 32716;
+		fr = 5;
+		sz = [116,116];
+	case 1441
+		fileName = '20170417_light-7';
+		numImages = 29036;
+		fr = 5;
+		sz = [98,98];
+	case 1442
+		fileName = '20170418_light-1';
+		numImages = 32716;
+		fr = 5;
+		sz = [138,138];
+	case 1443
+		fileName = '20170418_light-2';
+		numImages = 32716;
+		fr = 5;
+		sz = [133,133];
+	case 1444
+		fileName = '20170418_light-3';
+		numImages = 32716;
+		fr = 5;
+		sz = [136,136];
+	case 1445
+		fileName = '20170418_light-4';
+		numImages = 32716;
+		fr = 5;
+		sz = [134,134];
+	case 1446
+		fileName = '20170418_light-5';
+		numImages = 32716;
+		fr = 5;
+		sz = [218,218];
+	case 1447
+		fileName = '20170418_light-6';
+		numImages = 13100;
+		fr = 5;
+		sz = [214,214];
+	case 1448
+		fileName = '20170419_dark-1';
+		numImages = 32716;
+		fr = 5;
+		sz = [129,129];
+	case 1449
+		fileName = '20170419_dark-2';
+		numImages = 32716;
+		fr = 5;
+		sz = [146,146];
+	case 1450
+		fileName = '20170419_dark-3';
+		numImages = 32716;
+		fr = 5;
+		sz = [150,150];
+	case 1451
+		fileName = '20170419_dark-4';
+		numImages = 32716;
+		fr = 5;
+		sz = [138,138];
+	case 1452
+		fileName = '20170419_dark-5';
+		numImages = 32716;
+		fr = 5;
+		sz = [135,135];
+	case 1453
+		fileName = '20170419_dark-6';
+		numImages = 32716;
+		fr = 5;
+		sz = [136,136];
+	case 1454
+		fileName = '20170419_dark-7';
+		numImages = 32716;
+		fr = 5;
+		sz = [168,168];
+	case 1455
+		fileName = '20170419_dark-8';
+		numImages = 21627;
+		fr = 5;
+		sz = [151,151];
+	case 1456
+		fileName = '20170420_dark-1';
+		numImages = 32716;
+		fr = 5;
+		sz = [333,333];
+	case 1457
+		fileName = '20170420_dark-2';
+		numImages = 14511;
+		fr = 5;
+		sz = [198,198];
+	case 1458
+		fileName = '20170420_dark-3';
+		numImages = 33164;
+		fr = 5;
+		sz = [250,272];
+	case 1459
+		fileName = '20170420_dark-4';
+		numImages = 32716;
+		fr = 5;
+		sz = [285,275];
+	case 1460
+		fileName = '20170420_dark-5';
+		numImages = 32716;
+		fr = 5;
+		sz = [162,162];
+	case 1461
+		fileName = '20170420_dark-6';
+		numImages = 32716;
+		fr = 5;
+		sz = [158,158];
+	case 1462
+		fileName = '20170420_dark-7';
+		numImages = 32716;
+		fr = 5;
+		sz = [164,164];
+	case 1463
+		fileName = '20170420_dark-8';
+		numImages = 28050;
+		fr = 5;
+		sz = [174,174];
+	case 1464
+		fileName = '20170424_dark-1';
+		numImages = 32716;
+		fr = 5;
+		sz = [161,161];
+	case 1465
+		fileName = '20170424_dark-2';
+		numImages = 32716;
+		fr = 5;
+		sz = [164,164];
+	case 1466
+		fileName = '20170424_dark-3';
+		numImages = 32716;
+		fr = 5;
+		sz = [137,137];
+	case 1467
+		fileName = '20170424_dark-4';
+		numImages = 32716;
+		fr = 5;
+		sz = [136,136];
+	case 1468
+		fileName = '20170424_dark-5';
+		numImages = 32716;
+		fr = 5;
+		sz = [144,144];
+	case 1469
+		fileName = '20170424_dark-6';
+		numImages = 32716;
+		fr = 5;
+		sz = [156,156];
+	case 1470
+		fileName = '20170424_dark-7';
+		numImages = 27393;
+		fr = 5;
+		sz = [125,125];
+	case 1471
+		fileName = '20170425_dark-1';
+		numImages = 32716;
+		fr = 5;
+		sz = [131,131];
+	case 1472
+		fileName = '20170425_dark-2';
+		numImages = 32716;
+		fr = 5;
+		sz = [150,150];
+	case 1473
+		fileName = '20170425_dark-3';
+		numImages = 17950;
+		fr = 5;
+		sz = [157,157];
+	case 1474
+		fileName = '20170425_dark-4';
+		numImages = 14766;
+		fr = 5;
+		sz = [234,227];
+	case 1475
+		fileName = '20170425_dark-5';
+		numImages = 32716;
+		fr = 5;
+		sz = [142,142];
+	case 1476
+		fileName = '20170425_dark-6';
+		numImages = 32716;
+		fr = 5;
+		sz = [136,136];
+	case 1477
+		fileName = '20170427_dark-1';
+		numImages = 32716;
+		fr = 5;
+		sz = [199,199];
+	case 1478
+		fileName = '20170427_dark-2';
+		numImages = 32716;
+		fr = 5;
+		sz = [269,306];
+	case 1479
+		fileName = '20170427_dark-3';
+		numImages = 32716;
+		fr = 5;
+		sz = [135,135];
+	case 1480
+		fileName = '20170427_dark-4';
+		numImages = 32716;
+		fr = 5;
+		sz = [122,122];
+	case 1481
+		fileName = '20170427_dark-5';
+		numImages = 32716;
+		fr = 5;
+		sz = [136,136];
+	case 1482
+		fileName = '20170427_dark-6';
+		numImages = 32716;
+		fr = 5;
+		sz = [227,246];
+	case 1483
+		fileName = '20170427_dark-7';
+		numImages = 32716;
+		fr = 5;
+		sz = [158,155];
+	case 1484
+		fileName = '20170427_dark-8';
+		numImages = 8570;
+		fr = 5;
+		sz = [154,138];
+    case 1485
+		fileName = '20170501_dark-1';
+		numImages = 32716;
+		fr = 5;
+		sz = [228,228];
+	case 1486
+		fileName = '20170501_dark-2';
+		numImages = 32716;
+		fr = 5;
+		sz = [159,159];
+	case 1487
+		fileName = '20170501_dark-3';
+		numImages = 32716;
+		fr = 5;
+		sz = [146,146];
+	case 1488
+		fileName = '20170501_dark-4';
+		numImages = 32716;
+		fr = 5;
+		sz = [136,136];
+	case 1489
+		fileName = '20170501_dark-5';
+		numImages = 32716;
+		fr = 5;
+		sz = [177,177];
+	case 1490
+		fileName = '20170501_dark-6';
+		numImages = 32716;
+		fr = 5;
+		sz = [141,141];
+	case 1491
+		fileName = '20170501_dark-7';
+		numImages = 25789;
+		fr = 5;
+		sz = [250,250];
+    % ------------ wataru data --------- %
+    case 2000
+		fileName = '01_Osm_iGCaMP_H04_ContHM_062717 test00001_corrected';
+		numImages = 1202;
+		fr = 2;
+		sz = [512,512];
     otherwise
         error('file does not exist');
 end

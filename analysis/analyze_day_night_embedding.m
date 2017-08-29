@@ -3,13 +3,14 @@ findx = {1001:1011,1023:1033,1045:1055;1012:1022,1034:1044,1056:1066}';
 fname = 'L_15_W_5_N_32_s_1_t_1_step_25_20161024_unsp_workspace';
 fpath = 'C:\Shuting\Projects\hydra behavior\results\day_night\tsne\';
 segpath = 'C:\Shuting\Projects\hydra behavior\results\day_night\seg\';
-dpath = 'F:\Data Timelapse Chris\20160613-18 time lapse WT\processed\';
+dpath = 'E:\Data Timelapse Chris\20160613-18 time lapse WT\processed\';
 p = 0.05;
-fr = 1; % this dataset is 1Hz
+fr = 2; % this dataset is 1Hz
 timeStep = 25; % but I still used 25 as window size
+time_cvs = 1/fr/60/60; % hours
 
 % Chris's detection result
-load('F:\Data Timelapse Chris\egestion_detection\egt_cd.mat');
+load('E:\Data Timelapse Chris\egestion_detection\egt_cd.mat');
 
 % load embedding result
 load([fpath fname '.mat']);
@@ -23,7 +24,7 @@ for n = 1:2
         for ii = 1:length(findx{m,n})
             seg_info = load([segpath fileinfo(findx{m,n}(ii)) '_seg.mat']);
             b_vec(end+1:end+length(seg_info.b)) = seg_info.b;
-            fprintf('%u\n',length(seg_info.b));
+%             fprintf('%u\n',length(seg_info.b));
         end
         wd{m,n} = b_vec;
     end
@@ -31,7 +32,7 @@ end
 wd_all = cell2mat(reshape(wd',[],1)');
 
 % moving average
-wsz = 30*fr*60;
+wsz = 15*fr*60;
 wd_mw = zeros(size(wd_all));
 T = length(wd_all);
 for n = 1:T
@@ -43,11 +44,12 @@ end
 
 % plot
 figure; set(gcf,'color','w'); clf; hold on; 
-plot(wd_all,'color',0.7*[1 1 1]); plot(wd_mw+19,'r','linewidth',1.5)
-h1 = scatter(egt,wd_mw(egt)+19,'bo','linewidth',1);
-h2 = scatter(egt_cd,wd_mw(egt_cd)+19,'k*','linewidth',1);
-xlim([1 T]); legend([h1 h2],{'SH','CD'});
-xlabel('frame'); ylabel('width')
+plot([1:length(wd_all)]*time_cvs,wd_all,'color',0.7*[1 1 1],'linewidth',0.5); 
+plot([1:length(wd_all)]*time_cvs,wd_mw+19,'r','linewidth',1)
+h1 = scatter(egt*time_cvs,wd_mw(egt)+19,'bo','linewidth',0.5);
+h2 = scatter(egt_cd*time_cvs,wd_mw(egt_cd)+19,'k*','linewidth',0.5);
+xlim([1 T]*time_cvs); legend([h1 h2],{'SH','CD'});
+xlabel('time (h)'); ylabel('width (pixel)')
 
 % remove incomplete windows
 findx_sort = cell2mat(reshape(findx',[],1)');
@@ -75,7 +77,7 @@ egt_wd_cd = unique(ceil(find(egt_vec_cd)/timeStep));
 
 % visualize
 ifrandomize = 0;
-visualizeResultMulti(egt_wd,timeStep,movieParamMulti,ifrandomize,1,'egt_detection');
+% visualizeResultMulti(egt_wd,timeStep,movieParamMulti,ifrandomize,1,'egt_detection');
 
 %% analyze embedding result
 % density
@@ -126,5 +128,35 @@ for n = 1:2
         axis equal tight off xy
     end
 end
+
+%% region 242 is egestion
+% use smoothing kernal of 60 and re-run runFVtsneUnsp again
+% do it manually here
+
+% extract data labels
+vdata = emData;
+vdata = round((vdata/maxVal*numPoints+numPoints)/2);
+vdata(vdata<=0) = 1;
+vdata(vdata>=numPoints) = numPoints;
+segIndx = seg_im_trans(sub2ind(size(im),vdata(:,1),vdata(:,2)));
+
+% plot new segmented regions
+figure; set(gcf,'color','w')
+subplot(1,2,1)
+plotTsneDens(xx,im,im_mask,cmax)
+subplot(1,2,2)
+plotRegionLabelHighlight(xx,seg_im,im_mask,242)
+
+% plot densitiy overlayed with segmentation boundaries
+figure; set(gcf,'color','w');
+tmp = densEgt;
+tmp(seg_im==0) = min(densEgt(:))-(max(densEgt(:))-min(densEgt(:)))/63;
+tmp(im_mask==0) = min(densEgt(:))-(max(densEgt(:))-min(densEgt(:)))/63;
+imagesc(xx,xx,tmp);
+colormap([[1 1 1];jet(63)]);
+pos = get(gca,'position');
+shading flat; axis equal tight xy; colorbar
+caxis([min(tmp(:)) max(densEgt(:))])
+set(gca,'position',pos)
 
 

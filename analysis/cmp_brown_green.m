@@ -6,7 +6,7 @@
 % findx = {{(621:628)',(629:636)',(645:652)',(673:679)',(687:694)',(703:710)'};...
 %     {(760:764)',(765:769)',(770:777)',(778:783)',(784:790)'}};
 
-% exclude beginning and end
+% exclude beginning and end (green were not fed)
 findx = {{(622:627)',(630:635)',(646:651)',(674:678)',(688:693)',(704:709)'};...
     {(761:764)',(766:769)',(771:776)',(779:782)',(785:789)'}}; % brown; green
 
@@ -17,6 +17,25 @@ dpath = {{[dpathbase '20161026\'],[dpathbase '20161105\'],...
     {[dpathbase '20170209\'],[dpathbase '20170209\'],...
     [dpathbase '20170209\'],[dpathbase '20170209\'],...
     [dpathbase '20170209\']}};
+
+% fed green
+% findx = {{(621:628)',(629:636)',(645:652)',(673:679)',(687:694)',(703:710)'};...
+%     {(1301:1308)',(1309:1314)',(1315:1322)',(1323:1329)',(1330:1338)'}}; % brown; green
+
+% % fed green exluding beginning
+% findx = {{(622:628)',(630:636)',(646:652)',(674:679)',(688:694)',(704:710)'};...
+%     {(1302:1308)',(1310:1314)',(1316:1322)',(1324:1329)',(1331:1338)'}}; % brown; green
+% 
+% dpathbase = 'C:\Shuting\Projects\hydra behavior\results\long_recording\svm\';
+% dpath = {{[dpathbase '20161026\'],[dpathbase '20161105\'],...
+%     [dpathbase '20161110\'],[dpathbase '20161203\hydra1\'],...
+%     [dpathbase '20161203\hydra2\'],[dpathbase '20161211\']};...
+%     {'C:\Shuting\Projects\hydra behavior\results\viridissima\svm\',...
+%     'C:\Shuting\Projects\hydra behavior\results\viridissima\svm\',...
+%     'C:\Shuting\Projects\hydra behavior\results\viridissima\svm\',...
+%     'C:\Shuting\Projects\hydra behavior\results\viridissima\svm\',...
+%     'C:\Shuting\Projects\hydra behavior\results\viridissima\svm\'}};
+
 name_str = {'vulgaris','viridis'};
 cc = {[0.8 0.4 0],[0 0.4 0.2]}; % colors: brown, green
 
@@ -102,10 +121,10 @@ for n = 1:num_type
     end
 end
 % significance test
+pval = zeros(numClass,1);
 for ii = 1:numClass
-    [~,pval] = ttest2(data_hist{1}(:,ii),data_hist{2}(:,ii));
-%     pval = ranksum(data_hist{1}(:,ii),data_hist{2}(:,ii));
-    if pval < p
+    pval(ii) = ranksum(data_hist{1}(:,ii),data_hist{2}(:,ii));
+    if pval(ii) < p
         scatter(ii,max([data_hist{1}(:,ii);data_hist{2}(:,ii)])+0.1,'k*');
     end
 end
@@ -113,6 +132,7 @@ xlim([0 numClass+1]);
 set(gca,'xtick',1:numClass,'xticklabel',bhv_str)
 ylabel('Time (%)');
 box off
+title(num2str(pval'));
 
 % saveas(gcf,[dpath 'behavior_hist_annotype' num2str(annotype) '.fig'])
 
@@ -155,7 +175,7 @@ cc_indv = max(cc_indv-0.3,0);
 
 stepsz = 0.07;
 stepvec = [-3*stepsz:stepsz:3*stepsz];
-figure
+figure; set(gcf,'color','w','position',[1959 206 854 363])
 for n = 1:num_type
     subplot(num_type,1,n); hold on;
     for ii = 1:num_expt(n)
