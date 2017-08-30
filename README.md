@@ -11,6 +11,7 @@ This is an automated behavior analysis method developed for _Hydra vulgaris_, us
 6. t-SNE embedding -- Embed the high-dimensional Fisher Vectors to a 2D space, and discover behavior types in an unsupervised manner.
 
 ## Compilation
+### Dense trajectories
 The first thing that needs to be compiled is the dense trajectory package. Please follow instructions on this page: https://lear.inrialpes.fr/people/wang/dense_trajectories. Basically, you need to compile first OpenCV and ffmpeg, then the dense trajectories package.
 
 The compile parameters we used in this project are as following:
@@ -39,6 +40,10 @@ const float max_var = 50; //default 50
 const float max_dis = 50; //default 20
 ```
 
+### Fisher vector
+INRIA's Fisher vector implementation could be found here: https://lear.inrialpes.fr/src/inria_fisher/.
+
+### libSVM
 You will also need to compiles the libSVM package for training SVM classifiers. Please follow the instructions here: https://www.csie.ntu.edu.tw/~cjlin/libsvm/.
 
 ## File organization
