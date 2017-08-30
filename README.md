@@ -1,7 +1,7 @@
 # hydra_behavior
 This project provides a tool for classifying Hydra behaviors with computer vision methods. For details about the method, see Han et al. [1].
 
-## Introduction
+## Overview
 This is an automated behavior analysis method developed for _Hydra vulgaris_, using an adapted Bag-of-Words (BoW) framework. Briefly, this method consists of the following steps:
 1. Video pre-processing -- Segment the hydra from background, fit hydra to an ellipse, segment the hydra to three body parts (tentacles, upper body, lower body), rotate the hydra region to a vertical position, scale it to a normalized length, and generate short video clips of user-specified length (5 seconds by default).
 2. Feature extraction -- Using dense trajectories tool to extract video features including Histogram of Optical Flow (HOF), Histogram of Oriented Gradients (HOG) and Motion Boundary Histogram (MBH).
