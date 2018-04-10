@@ -101,4 +101,4 @@ svm.kernel -- Type of kernel to use in SVM: 0, linear; 1, polynomial; 2, RBF; 3,
 
 
 ## Reference
-[1] Han et al., Comprehensive machine learning analysis of Hydra behavior reveals stability of basic behavioral repertoire. In preparation.
+[1] Shuting Han, Ekaterina Taralova, Christophe Dupre, Rafael Yuste. Comprehensive machine learning analysis of Hydra behavior reveals a stable behavioral repertoire. eLife 2018;7:e32605 DOI: 10.7554/eLife.32605
